@@ -76,7 +76,7 @@
 <div class="h-screen w-screen bg-zinc-800">
 	<div class="bg_siram h-full w-full max-w-md mx-auto flex flex-col">
 		<div>
-			<img src="http://abadinet.my.id:1880/hd_siram1.png" alt="hd_siram" />
+			<img src=" /hd_siram1.png" alt="hd_siram" />
 		</div>
 		<div class="grid grid-cols-9 content-center justify-center mt-6">
 			<!--status lengas-->
@@ -150,20 +150,20 @@
 						<div></div>
 						<div class="text-sm font-bold mb-0"><small>Siram Sekarang</small></div>
 						<button class="w-1/2 h-1/2 mt-4 ">
-							<img src="http://abadinet.my.id:1880/jadwal.png" alt="btn" />
+							<img src=" /jadwal.png" alt="btn" />
 						</button>
 						<button class="w-1/4 h-1/4 ">
-							<img src="http://abadinet.my.id:1880/logo_agrostandar.png" alt="btn" />
+							<img src=" /logo_agrostandar.png" alt="btn" />
 						</button>
 						<label class="swap swap-flip h-12 w-12">
 							<!-- this hidden checkbox controls the state -->
 							<input type="checkbox" />
 	
 							<div class="swap-on">
-								<img class="ml-2" src="http://abadinet.my.id:1880/btnhijau.jpeg" alt="btn_on" />
+								<img class="ml-2" src=" /btnhijau.jpeg" alt="btn_on" />
 							</div>
 							<div class="swap-off">
-								<img class="ml-2" src="http://abadinet.my.id:1880/btnmerah.jpeg" alt="btn_off" />
+								<img class="ml-2" src=" /btnmerah.jpeg" alt="btn_off" />
 							</div>
 						</label>
 					</div>
@@ -173,7 +173,7 @@
 		</div>
 
 		<div class="grid justify-items-start ">
-			<button class="h-8 w-8 ml-8 mt-24" on:click={() =>goto('/home')}> <img src="http://abadinet.my.id:1880/btn_home2.png" alt="btn_home"> </button>
+			<button class="h-8 w-8 ml-8 mt-24" on:click={() =>goto('/home')}> <img src=" /btn_home2.png" alt="btn_home"> </button>
 		</div>
 		
 	</div>
@@ -181,11 +181,11 @@
 
 <style>
 	.btn_gohome {
-		background-image: url('http://abadinet.my.id:1880/btn1.png');
+		background-image: url(' /btn1.png');
 		background-size: cover;
 	}
 	.bg_siram {
-		background-image: url('http://abadinet.my.id:1880/bg_siram.png');
+		background-image: url(' /bg_siram.png');
 		background-position: center;
 		background-size: cover;
 	}

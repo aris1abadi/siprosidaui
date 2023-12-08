@@ -10,7 +10,7 @@
 <div class="h-screen w-screen bg-zinc-800">
 	<div class="mainbg h-full w-full max-w-md mx-auto flex flex-col">
 		<div >
-			<img src="http://abadinet.my.id:1880/hd_home.png" alt="hd_home" />
+			<img src="/hd_home.png" alt="hd_home" />
 		</div>
 		<div class="grid grid-cols-12 h-16 w-full ">
 			<div class="col-span-2"></div>
@@ -52,10 +52,10 @@
 						<input type="checkbox" />
 
 						<div class="swap-on">
-							<img src="http://abadinet.my.id:1880/btn_air1.png" alt="srm_on" />
+							<img src="/btn_air1.png" alt="srm_on" />
 						</div>
 						<div class="swap-off">
-							<img src="http://abadinet.my.id:1880/btn_air2.png" alt="srm_off" />
+							<img src="/btn_air2.png" alt="srm_off" />
 						</div>
 					</label>
 
@@ -65,10 +65,10 @@
 							<input type="checkbox" />
 
 							<div class="swap-on">
-								<img class="ml-2" src="http://abadinet.my.id:1880/btnhijau.jpeg" alt="btn_on" />
+								<img class="ml-2" src=" /btnhijau.jpeg" alt="btn_on" />
 							</div>
 							<div class="swap-off">
-								<img class="ml-2" src="http://abadinet.my.id:1880/btnmerah.jpeg" alt="btn_off" />
+								<img class="ml-2" src=" /btnmerah.jpeg" alt="btn_off" />
 							</div>
 						</label>
 					</div>
@@ -84,7 +84,7 @@
 					<small>Penyiramam</small>
 				</div>
 				<div>
-					<img src="http://abadinet.my.id:1880/btn_pest1.png" alt="siram" />
+					<img src=" /btn_pest1.png" alt="siram" />
 				</div>
 			</button>
 			<button on:click={() => goto('/pestisida')} class="col-span-3 h-full bg-white rounded-lg shadow-xl">
@@ -92,7 +92,7 @@
 					<small>Pestisida</small>
 				</div>
 				<div>
-					<img src="http://abadinet.my.id:1880/btn_pest2.png" alt="siram" />
+					<img src=" /btn_pest2.png" alt="siram" />
 				</div>
 			</button>
 			<button on:click={() => goto('/biopest')} class="col-span-3 h-full bg-white rounded-lg shadow-xl">
@@ -100,7 +100,7 @@
 					<small>Biopest</small>
 				</div>
 				<div>
-					<img src="http://abadinet.my.id:1880/btn_pest3.png" alt="siram" />
+					<img src=" /btn_pest3.png" alt="siram" />
 				</div>
 			</button>
 			<div class="col-span-1"></div>
@@ -110,7 +110,7 @@
 
 <style>
 	.mainbg {
-		background-image: url('http://abadinet.my.id:1880/bg_home.png');		
+		background-image: url('/bg_home.png');		
 		background-position: center;
 		background-size: cover;
 	}

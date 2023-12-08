@@ -21,7 +21,7 @@
 <div class="h-screen w-screen bg-zinc-800">
 	<div class="bg_biopest h-full w-full max-w-md mx-auto flex flex-col">
 		<div>
-			<img src="http://abadinet.my.id:1880/hd_biopest1.png" alt="hd_biopest" />
+			<img src=" /hd_biopest1.png" alt="hd_biopest" />
 		</div>
 		<div class="grid grid-cols-12 w-full h-1/2">
 			<div></div>
@@ -111,7 +111,7 @@
 					<div class="text-center text-xs">Jadwal</div>
 					<div class="text-center text-xs">Semprot Sekarang</div>
 					<button class="h-12 w-12">
-						<img src="http://abadinet.my.id:1880/jadwal.png" alt="btn_jadwal" />
+						<img src=" /jadwal.png" alt="btn_jadwal" />
 					</button>
 
 					<label class="swap swap-flip h-12 w-12">
@@ -119,10 +119,10 @@
 						<input type="checkbox" />
 
 						<div class="swap-on">
-							<img class="ml-2" src="http://abadinet.my.id:1880/btnhijau.jpeg" alt="btn_on" />
+							<img class="ml-2" src=" /btnhijau.jpeg" alt="btn_on" />
 						</div>
 						<div class="swap-off">
-							<img class="ml-2" src="http://abadinet.my.id:1880/btnmerah.jpeg" alt="btn_off" />
+							<img class="ml-2" src=" /btnmerah.jpeg" alt="btn_off" />
 						</div>
 					</label>
 				</div>
@@ -131,14 +131,14 @@
 		</div>
 
 		<div class="grid justify-items-start ">
-			<button class="h-8 w-8 ml-8 mt-24" on:click={() =>goto('/home')}> <img src="http://abadinet.my.id:1880/btn_home2.png" alt="btn_home"> </button>
+			<button class="h-8 w-8 ml-8 mt-24" on:click={() =>goto('/home')}> <img src=" /btn_home2.png" alt="btn_home"> </button>
 		</div>
 	</div>
 </div>
 
 <style>
 	.bg_biopest {
-		background-image: url('http://abadinet.my.id:1880/bg_biopest.png');
+		background-image: url('/bg_biopest.png');
 		background-size: cover;
 		background-position: center;
 	}
