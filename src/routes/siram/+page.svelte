@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import {onMount} from 'svelte';
 	import {kirimMsg} from '$lib/mqttHandle'
-	import {sensor} from "$lib/store/stores"
+	import {lengas1,lengas2,lengas3,lengas4} from "$lib/store/stores"
 	import {lengas1Val,lengas2Val,lengas3Val,lengas4Val} from "$lib/mqttHandle"
 
 	onMount(() => {
@@ -81,24 +81,24 @@
 		<div class="grid grid-cols-9 content-center justify-center mt-6">
 			<!--status lengas-->
 			<div></div>
-			<div class="w-12 h-12 bg-white">
+			<div class="w-12 h-12 bg-white rounded-lg shadow-xl">
 				<div class="text-xs font-bold text-center"><small>Lengas1</small></div>
-				<div class="text-l font-bold text-center">{$sensor.lengas1}%</div>
+				<div class="text-l font-bold text-center">{$lengas1}%</div>
 			</div>
 			<div></div>
-			<div class="w-12 h-12 bg-white">
+			<div class="w-12 h-12 bg-white rounded-lg shadow-xl">
 				<div class="text-xs font-bold text-center"><small>Lengas2</small></div>
-				<div class="text-l font-bold text-center">{lengas2Val}%</div>
+				<div class="text-l font-bold text-center">{$lengas2}%</div>
 			</div>
 			<div></div>
-			<div class="w-12 h-12 bg-white">
+			<div class="w-12 h-12 bg-white rounded-lg shadow-xl">
 				<div class="text-xs font-bold text-center"><small>Lengas3</small></div>
-				<div class="text-l font-bold text-center">{lengas3Val}%</div>
+				<div class="text-l font-bold text-center">{$lengas3}%</div>
 			</div>
 			<div></div>
-			<div class="w-12 h-12 bg-white">
+			<div class="w-12 h-12 bg-white rounded-lg shadow-xl">
 				<div class="text-xs font-bold text-center"><small>Lengas4</small></div>
-				<div class="text-l font-bold text-center">{lengas4Val}%</div>
+				<div class="text-l font-bold text-center">{$lengas4}%</div>
 			</div>
 			<div></div>
 			<!-- lengas-->
@@ -125,7 +125,7 @@
 			<!--button siram lahan-->
 			<div></div>
 			<div class="col-span-7 w-full h-42 mt-4">
-				<div class="card w-full h-full bg-base-100 shadow-xl">
+				<div class="w-full h-full bg-base-100 rounded-lg shadow-xl">
 					<div class="grid grid-cols-4 gap-2 ml-2 mt-2">
 						<label class="text-xs font-bold text-center"
 							><small>Lahan1</small>
@@ -145,7 +145,7 @@
 						>
 					</div>
 					<!-- kontrol siram-->
-					<div class="grid grid-cols-3 w-full h-24 mt-4 border border-blue-500 justify-items-center">
+					<div class="grid grid-cols-3 w-full h-24 mt-4 border border-blue-500 rounded-lg rounded-tl-none rounded-tr-none justify-items-center">
 						<div class="text-sm font-bold text-center"><small>Jadwal</small></div>
 						<div></div>
 						<div class="text-sm font-bold mb-0"><small>Siram Sekarang</small></div>

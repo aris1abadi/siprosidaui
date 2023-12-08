@@ -1,5 +1,5 @@
 import mqtt from 'mqtt'; // import namespace "mqtt"
-import { sensor } from './store/stores';
+import { lengas1, lengas2, lengas3, lengas4,suhuUdara,kelembabanUdara} from './store/stores';
 
 
 //const mqtt = require('mqtt')
@@ -20,6 +20,8 @@ export let lengas1Val = 0
 export let lengas2Val = 0
 export let lengas3Val = 0
 export let lengas4Val = 0
+
+
 
 
 const kontrolId = "2002"
@@ -62,12 +64,30 @@ client.on('connect', () => {
 })
 
 client.on('message', (topic, message, packet) => {
-  //console.log('Received Message:= ' + message.toString() + '\nOn topic:= ' + topic)
+  console.log('Received Message:= ' + message.toString() + '\nOn topic:= ' + topic)
   const topicMqtt = topic.split('/');
-  //console.log("type msg: " + topicMqtt[2])
+  //console.log("type msg: " + topicMqtt[2] + "-" + topicMqtt[4] + " => " + message)
   //bsip-in/2002/kontrol/0/cmd
-  if ((topicMqtt[2] === "lengas") && (topicMqtt[4] == "value")) {
-    console.log("lengas " + topicMqtt[3] + ":" + message)
+  if (topicMqtt[2] === "lengas") {
+    if (topicMqtt[4] == "value") {
+      //console.log("lengas " + topicMqtt[3] + ":" + message)
+      if (topicMqtt[3] === '1') {
+        lengas1.set(String(message))
+      } else if (topicMqtt[3] === '2') {
+        lengas2.set(String(message))
+      } else if (topicMqtt[3] === '3') {
+        lengas3.set(String(message))
+      } else if (topicMqtt[3] === '4') {
+        lengas4.set(String(message))
+      }
+    }
+  } else if (topicMqtt[2] === "sensorDHT") {
+    if(topicMqtt[4] === "temp"){
+      suhuUdara.set(String(message))
+    }else if(topicMqtt[4] === "hum"){
+      kelembabanUdara.set(String(message))
+    }
+
   }
 
 

@@ -1,12 +1,10 @@
 import { writable } from 'svelte/store';
 
 export const mqttStatus = writable(0);
-export const sensor = writable({
-    lengas1:'0',
-    lengas2:'0',
-    lengas3:'0',
-    lengas4:'0',
-});
-
-export const lengas1 = writable('0')
+export const lengas1 = writable('0');
+export const lengas2 = writable('0');
+export const lengas3 = writable('0');
+export const lengas4 = writable('0');
+export const suhuUdara = writable('0');
+export const kelembabanUdara = writable('0');
  

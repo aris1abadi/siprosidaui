@@ -1,10 +1,10 @@
 <script>
 	import { goto } from '$app/navigation';
+	import {suhuUdara,kelembabanUdara,lengas1} from "$lib/store/stores"
 
-	let suhuUdara = 35.5;
-	let KelembabanUdara = 60;
-	let lengasTanah = 46;
-	let suhuTanah = 27;
+	
+	
+	let suhuTanah = '-';
 </script>
 
 <div class="h-screen w-screen bg-zinc-800">
@@ -18,12 +18,12 @@
 				<div class="grid grid-cols-3">
 					<div>
 						<div class="text-xs text-center mt-4"><small>Suhu</small></div>
-						<div class="text-center font-bold">{suhuUdara}°C</div>
+						<div class="text-center font-bold">{$suhuUdara}°C</div>
 					</div>
 					<div class="text-center">Udara</div>
 					<div>
 						<div class="text-xs text-center mt-4"><small>Kelembaban</small></div>
-						<div class="text-center font-bold">{suhuUdara}%</div>
+						<div class="text-center font-bold">{$kelembabanUdara}%</div>
 					</div>
 				</div>
 			</div>
@@ -36,7 +36,7 @@
 				<div class="grid grid-cols-2">
 					<div>
 						<div class="text-center text-xs"><small>Lengas</small></div>
-						<div class="text-center text-xs font-bold">{lengasTanah}%</div>
+						<div class="text-center text-xs font-bold">{$lengas1}%</div>
 					</div>
 					<div>
 						<div class="text-center text-xs"><small>Suhu</small></div>
