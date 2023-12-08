@@ -1,4 +1,5 @@
 import mqtt from 'mqtt'; // import namespace "mqtt"
+import { sensor } from './store/stores';
 
 
 //const mqtt = require('mqtt')
@@ -20,7 +21,8 @@ export let lengas2Val = 0
 export let lengas3Val = 0
 export let lengas4Val = 0
 
-const kontrolId ="2002"
+
+const kontrolId = "2002"
 
 const subMqtt = "bsip-out/" + kontrolId + "/#"
 const pubMqtt = "bsip-in/" + kontrolId + "/"
@@ -64,36 +66,21 @@ client.on('message', (topic, message, packet) => {
   const topicMqtt = topic.split('/');
   //console.log("type msg: " + topicMqtt[2])
   //bsip-in/2002/kontrol/0/cmd
-  if((topicMqtt[2] === "lengas") && (topicMqtt[4] == "value")){
-    console.log("lengas " + topicMqtt[3] +":" + message)
-    switch(topicMqtt[3]){
-      
-      case "1":
-        lengas1Val = parseInt(String(message))
-      break;
-      case "2":
-        lengas2Val = parseInt(String(message))
-      break;
-      case "3":
-        lengas3Val = parseInt(String(message))
-      break;
-      case "4":
-        lengas4Val = parseInt(String(message))
-      break;
-    }
+  if ((topicMqtt[2] === "lengas") && (topicMqtt[4] == "value")) {
+    console.log("lengas " + topicMqtt[3] + ":" + message)
   }
-      
 
-  
- 
+
+
+
 })
 
 client.on('close', () => {
   console.log(clientId + ' disconnected')
 })
 
-export function kirimMsg(type,num,cmd,msg){
-	let ms = pubMqtt + type + '/' + num + '/' + cmd
-	client.publish(ms,msg)
+export function kirimMsg(type, num, cmd, msg) {
+  let ms = pubMqtt + type + '/' + num + '/' + cmd
+  client.publish(ms, msg)
 }
 
