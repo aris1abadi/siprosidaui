@@ -84,7 +84,7 @@
 					<small>Penyiramam</small>
 				</div>
 				<div>
-					<img src=" /btn_pest1.png" alt="siram" />
+					<img src=" /penyiraman.png" alt="siram" />
 				</div>
 			</button>
 			<button on:click={() => goto('/pestisida')} class="col-span-3 h-full bg-white rounded-lg shadow-xl">
@@ -92,15 +92,15 @@
 					<small>Pestisida</small>
 				</div>
 				<div>
-					<img src=" /btn_pest2.png" alt="siram" />
+					<img src=" /pestisida.png" alt="pestisida" />
 				</div>
 			</button>
 			<button on:click={() => goto('/biopest')} class="col-span-3 h-full bg-white rounded-lg shadow-xl">
 				<div class="text-xs font-bold text-center mt-1">
-					<small>Biopest</small>
+					<small>Biopestisida</small>
 				</div>
 				<div>
-					<img src=" /btn_pest3.png" alt="siram" />
+					<img src=" /biopestisida.png" alt="biopest" />
 				</div>
 			</button>
 			<div class="col-span-1"></div>

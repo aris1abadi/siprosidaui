@@ -21,7 +21,7 @@ export let lengas2Val = 0
 export let lengas3Val = 0
 export let lengas4Val = 0
 
-const kontrolId = "2002"
+const kontrolId = "2003"
 
 const subMqtt = "bsip-out/" + kontrolId + "/#"
 const pubMqtt = "bsip-in/" + kontrolId + "/"
@@ -59,7 +59,7 @@ client.on('connect', () => {
   console.log('client connected:' + clientId)
   client.subscribe(subMqtt, { qos: 0 })
   let pubStatus = pubMqtt + "kontrol/0/status"
-  client.publish(pubStatus, 'ui 2003 reconect', { qos: 0, retain: false })
+  client.publish(pubStatus, 'siprosida ui 2003 reconect', { qos: 0, retain: false })
 })
 
 client.on('message', (topic, message, packet) => {
@@ -86,6 +86,15 @@ client.on('message', (topic, message, packet) => {
     }else if(topicMqtt[4] === "hum"){
       kelembabanUdara.set(String(message))
     }
+
+  }else if(topicMqtt[2] === "siram"){
+    if(topicMqtt[4] === "status"){
+      
+    }
+
+  }else if(topicMqtt[2] === "pestisida"){
+
+  }else if(topicMqtt[2] === "biopest"){
 
   }
 
