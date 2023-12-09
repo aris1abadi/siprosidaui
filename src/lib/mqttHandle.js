@@ -21,15 +21,14 @@ export let lengas2Val = 0
 export let lengas3Val = 0
 export let lengas4Val = 0
 
-
-
-
 const kontrolId = "2002"
 
 const subMqtt = "bsip-out/" + kontrolId + "/#"
 const pubMqtt = "bsip-in/" + kontrolId + "/"
 const clientId = 'mqttjs_' + Math.random().toString(16).substr(2, 8)
-const host = 'ws://abadinet.my.id:2020'
+//const host = 'ws://abadinet.my.id:2020'
+const host = 'wss://node-red.balingtansmart.my.id/ws'
+
 
 const options = {
   keepalive: 30,
@@ -60,7 +59,7 @@ client.on('connect', () => {
   console.log('client connected:' + clientId)
   client.subscribe(subMqtt, { qos: 0 })
   let pubStatus = pubMqtt + "kontrol/0/status"
-  client.publish(pubStatus, 'kontrol 2003 reconect', { qos: 0, retain: false })
+  client.publish(pubStatus, 'ui 2003 reconect', { qos: 0, retain: false })
 })
 
 client.on('message', (topic, message, packet) => {
