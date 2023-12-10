@@ -1,7 +1,27 @@
 import mqtt from 'mqtt'; // import namespace "mqtt"
-import { lengas1, lengas2, lengas3, lengas4,suhuUdara,kelembabanUdara} from './store/stores';
+import {
+  lengas1,
+  lengas2,
+  lengas3,
+  lengas4,
+  suhuUdara,
+  kelembabanUdara,
+  lahan1_status,
+  lahan2_status,
+  lahan3_status,
+  lahan4_status,
+  useLengas,
+  siram_status,
+  volumeAir,
+  ambangLengas,
+  pestisida_status,
+  lahan1Pestisida_status,
+  lahan2Pestisida_status,
+  lahan3Pestisida_status,
+  lahan4Pestisida_status
+} from './store/stores';
 
-
+import { onMount } from 'svelte';
 //const mqtt = require('mqtt')
 
 /***
@@ -16,18 +36,19 @@ import { lengas1, lengas2, lengas3, lengas4,suhuUdara,kelembabanUdara} from './s
  * This document explains how to use MQTT over TCP with both mqtt and mqtts protocols.
  * EMQX's default port for mqtt connections is 1883, while for mqtts it is 8883.
  */
-export let lengas1Val = 0
-export let lengas2Val = 0
-export let lengas3Val = 0
-export let lengas4Val = 0
 
-const kontrolId = "2003"
+
+
+
+
+const kontrolId = "2002"
 
 const subMqtt = "bsip-out/" + kontrolId + "/#"
 const pubMqtt = "bsip-in/" + kontrolId + "/"
 const clientId = 'mqttjs_' + Math.random().toString(16).substr(2, 8)
 //const host = 'ws://abadinet.my.id:2020'
 const host = 'wss://node-red.balingtansmart.my.id/ws'
+
 
 
 const options = {
@@ -72,6 +93,7 @@ client.on('message', (topic, message, packet) => {
       //console.log("lengas " + topicMqtt[3] + ":" + message)
       if (topicMqtt[3] === '1') {
         lengas1.set(String(message))
+        //$lengas1 = String(message)      
       } else if (topicMqtt[3] === '2') {
         lengas2.set(String(message))
       } else if (topicMqtt[3] === '3') {
@@ -81,20 +103,110 @@ client.on('message', (topic, message, packet) => {
       }
     }
   } else if (topicMqtt[2] === "sensorDHT") {
-    if(topicMqtt[4] === "temp"){
+    if (topicMqtt[4] === "temp") {
       suhuUdara.set(String(message))
-    }else if(topicMqtt[4] === "hum"){
+    } else if (topicMqtt[4] === "hum") {
       kelembabanUdara.set(String(message))
     }
 
-  }else if(topicMqtt[2] === "siram"){
-    if(topicMqtt[4] === "status"){
+  } else if (topicMqtt[2] === "sensorFlow") {
+    if (topicMqtt[4] === "volumeRate") {
+      volumeAir.set(String(message))
+    }
+
+  }else if (topicMqtt[2] === "siram") {
+    if (topicMqtt[4] === "status") {
+      switch (topicMqtt[3]) {
+        case '0':
+          if (String(message) === '1') {
+            siram_status.set(true)
+          } else {
+            siram_status.set(false)
+          }
+          break;
+        case '1':
+          if (String(message) === '1') {
+            lahan1_status.set(true)
+          } else {
+            lahan1_status.set(false)
+          }
+          break;
+
+        case '2':
+          if (String(message) === '1') {
+            lahan2_status.set(true)
+          } else {
+            lahan2_status.set(false)
+          }
+          break;
+
+        case '3':
+          if (String(message) === '1') {
+            lahan3_status.set(true)
+          } else {
+            lahan3_status.set(false)
+          }
+          break;
+
+        case '4':
+          if (String(message) === '1') {
+            lahan4_status.set(true)
+          } else {
+            lahan4_status.set(false)
+          }
+          break;
+      }
+    } else if (topicMqtt[4] === "getAmbang") {
+
+    }
+
+  } else if (topicMqtt[2] === "pestisida") {
+    if (topicMqtt[4] === "status") {
+      switch (topicMqtt[3]) {
+        case '0':
+          if (String(message) === '1') {
+            pestisida_status.set(true)
+          } else {
+            pestisida_status.set(false)
+          }
+          break;
+        case '1':
+          if (String(message) === '1') {
+            lahan1Pestisida_status.set(true)
+          } else {
+            lahan1Pestisida_status.set(false)
+          }
+          break;
+
+        case '2':
+          if (String(message) === '1') {
+            lahan2Pestisida_status.set(true)
+          } else {
+            lahan2Pestisida_status.set(false)
+          }
+          break;
+
+        case '3':
+          if (String(message) === '1') {
+            lahan3Pestisida_status.set(true)
+          } else {
+            lahan3Pestisida_status.set(false)
+          }
+          break;
+
+        case '4':
+          if (String(message) === '1') {
+            lahan4Pestisida_status.set(true)
+          } else {
+            lahan4Pestisida_status.set(false)
+          }
+          break;
+      }
+    }else if(topicMqtt[4] === "lahanStatus"){
       
     }
 
-  }else if(topicMqtt[2] === "pestisida"){
-
-  }else if(topicMqtt[2] === "biopest"){
+  } else if (topicMqtt[2] === "biopest") {
 
   }
 

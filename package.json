@@ -36,6 +36,8 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"mqtt": "^5.3.3"
+		"mqtt": "^5.3.3",
+		"svelte-time-picker": "^2.0.0",
+		"svelty-picker": "^5.2.0"
 	}
 }
