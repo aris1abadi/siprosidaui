@@ -18,8 +18,14 @@ import {
   lahan1Pestisida_status,
   lahan2Pestisida_status,
   lahan3Pestisida_status,
-  lahan4Pestisida_status
+  lahan4Pestisida_status,
+  jadwalSiram,
+  newJadwalSiram,
+  jadwalPestisida,
+  newJadwalPestisida
 } from './store/stores';
+
+
 
 import { onMount } from 'svelte';
 //const mqtt = require('mqtt')
@@ -37,19 +43,13 @@ import { onMount } from 'svelte';
  * EMQX's default port for mqtt connections is 1883, while for mqtts it is 8883.
  */
 
-
-
-
-
 const kontrolId = "2002"
 
 const subMqtt = "bsip-out/" + kontrolId + "/#"
 const pubMqtt = "bsip-in/" + kontrolId + "/"
-const clientId = 'mqttjs_' + Math.random().toString(16).substr(2, 8)
+const clientId = 'siprosida_' + Math.random().toString(16).substr(2, 8)
 //const host = 'ws://abadinet.my.id:2020'
 const host = 'wss://node-red.balingtansmart.my.id/ws'
-
-
 
 const options = {
   keepalive: 30,
@@ -92,26 +92,26 @@ client.on('message', (topic, message, packet) => {
     if (topicMqtt[4] == "value") {
       //console.log("lengas " + topicMqtt[3] + ":" + message)
       if (topicMqtt[3] === '1') {
-        lengas1.set(String(message))
+        lengas1.set(parseInt(String(message)))
         //$lengas1 = String(message)      
       } else if (topicMqtt[3] === '2') {
-        lengas2.set(String(message))
+        lengas2.set(parseInt(String(message)))
       } else if (topicMqtt[3] === '3') {
-        lengas3.set(String(message))
+        lengas3.set(parseInt(String(message)))
       } else if (topicMqtt[3] === '4') {
-        lengas4.set(String(message))
+        lengas4.set(parseInt(String(message)))
       }
     }
   } else if (topicMqtt[2] === "sensorDHT") {
     if (topicMqtt[4] === "temp") {
-      suhuUdara.set(String(message))
+      suhuUdara.set(parseInt(String(message)))
     } else if (topicMqtt[4] === "hum") {
-      kelembabanUdara.set(String(message))
+      kelembabanUdara.set(parseInt(String(message)))
     }
 
   } else if (topicMqtt[2] === "sensorFlow") {
     if (topicMqtt[4] === "volumeRate") {
-      volumeAir.set(String(message))
+      volumeAir.set(parseInt(String(message)))
     }
 
   }else if (topicMqtt[2] === "siram") {
@@ -120,8 +120,16 @@ client.on('message', (topic, message, packet) => {
         case '0':
           if (String(message) === '1') {
             siram_status.set(true)
+            lahan1_status.set(true)
+            lahan2_status.set(true)
+            lahan3_status.set(true)
+            lahan4_status.set(true)
           } else {
             siram_status.set(false)
+            lahan1_status.set(false)
+            lahan2_status.set(false)
+            lahan3_status.set(false)
+            lahan4_status.set(false)
           }
           break;
         case '1':
@@ -156,8 +164,17 @@ client.on('message', (topic, message, packet) => {
           }
           break;
       }
-    } else if (topicMqtt[4] === "getAmbang") {
-
+    } else if (topicMqtt[4] === "infoAmbang") {      
+      ambangLengas.set(parseInt(String(message)))
+    }else if (topicMqtt[4] === "useLengas") {
+      if(String(message) === '1'){
+        useLengas.set(true);
+      }else{
+        useLengas.set(false);
+      }
+    }else if(topicMqtt[4] === "jadwalSiram") {
+      jadwalSiram.set(String(message))
+      newJadwalSiram.set(true);
     }
 
   } else if (topicMqtt[2] === "pestisida") {
@@ -166,8 +183,16 @@ client.on('message', (topic, message, packet) => {
         case '0':
           if (String(message) === '1') {
             pestisida_status.set(true)
+            lahan1Pestisida_status.set(true)
+            lahan2Pestisida_status.set(true)
+            lahan3Pestisida_status.set(true)
+            lahan4Pestisida_status.set(true)
           } else {
             pestisida_status.set(false)
+            lahan1Pestisida_status.set(false)
+            lahan2Pestisida_status.set(false)
+            lahan3Pestisida_status.set(false)
+            lahan4Pestisida_status.set(false)
           }
           break;
         case '1':
@@ -202,8 +227,9 @@ client.on('message', (topic, message, packet) => {
           }
           break;
       }
-    }else if(topicMqtt[4] === "lahanStatus"){
-      
+    }else if(topicMqtt[4] === "jadwalPestisida"){
+      jadwalPestisida.set(String(message))
+      newJadwalPestisida.set(true)
     }
 
   } else if (topicMqtt[2] === "biopest") {
