@@ -1,6 +1,7 @@
 import { writable } from 'svelte/store';
 
 export const firtLoad = writable(true)
+export const demoMode =writable(true)
 
 export const mqttStatus = writable(0);
 export const lengas1 = writable(0);
@@ -51,12 +52,12 @@ export const newJadwalPestisida = writable(false)
 
 export function resetAllValue() {
     mqttStatus.set(0);
-    lengas1.set(0)
-    lengas2.set(0)
-    lengas3.set(0)
-    lengas4.set(0)
-    suhuUdara.set(0)
-    kelembabanUdara.set(0)
+    //lengas1.set(0)
+    //lengas2.set(0)
+    //lengas3.set(0)
+    //lengas4.set(0)
+    //suhuUdara.set(0)
+    //kelembabanUdara.set(0)
     sensorFlowPestisida.set(0)
     sensorFlowBiopest.set(0)
     sensorFlowAir.set(0)
@@ -64,11 +65,11 @@ export function resetAllValue() {
     //siram var
     useLengas.set(false)
     ambangLengas.set(60)
-    //lahan1_status.set(false)
-    //lahan2_status.set(false)
-    //lahan3_status.set(false)
-    //lahan4_status.set(false)
-    //siram_status.set(false)
+    lahan1_status.set(false)
+    lahan2_status.set(false)
+    lahan3_status.set(false)
+    lahan4_status.set(false)
+    siram_status.set(false)
     volumeAir.set(0)
 
     //pestisida

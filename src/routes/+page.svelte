@@ -8,7 +8,7 @@
 
 	*/
 	import { goto } from '$app/navigation';
-	import { resetAllValue,firtLoad } from '$lib/store/stores';
+	import { resetAllValue,firtLoad,demoMode } from '$lib/store/stores';
 	import { onMount } from 'svelte';
 	
 	
@@ -20,6 +20,12 @@
 
 	function startSiprosida(){
 		firtLoad.set(false);
+		demoMode.set(false)
+		goto('/home')
+	}
+	function startDemo(){
+		firtLoad.set(false);
+		demoMode.set(true)
 		goto('/home')
 	}
     
@@ -33,9 +39,14 @@
 			<div class="w-full h-80 mb-8"></div>
 			<div class="w-3/4 h-32 bg-white rounded-lg mt-20 grid justify-items-center">
 				<input type="text" placeholder="Tulis Passwordmu " class="input input-bordered input-secondary w-3/4 max-w-xs mt-4" />
-				<button on:click={() => startSiprosida()} class="btn btn-primary mt-2 "
-					> START</button
-				>
+				<div class="grid grid-cols-2 gap-4 py-2 w-3/4">
+					<button on:click={() => startDemo()} class="border border-purple-900  border rounded w-full h-10  mt-2  "
+						> DEMO</button
+					>
+					<button on:click={() => startSiprosida()} class="border border-purple-900 border bg-purple-900 rounded w-full h-10 mt-2 text-white"
+						> START</button
+					>
+				</div>				
 			
 			</div>
 			

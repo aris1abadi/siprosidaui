@@ -18,7 +18,8 @@
 		firtLoad,
 		resetAllValue,
 		newJadwalSiram,
-		jadwalSiram
+		jadwalSiram,
+		demoMode
 	} from '$lib/store/stores';
 
 	import Modal from '$lib/Modal.svelte';
@@ -35,7 +36,7 @@
 	let waktuSiram1 = '06:00';
 	let waktuSiram2 = '06:00';
 	let waktuSiram3 = '06:00';
-	let hari = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+	let hari = ['Min','Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 	let lahan = ['Lahan 1', 'Lahan 2', 'Lahan 3', 'Lahan 4'];
 	let pilihanHari1 = [0, 0, 0, 0, 0, 0, 0];
 	let pilihanHari2 = [0, 0, 0, 0, 0, 0, 0];
@@ -57,6 +58,10 @@
 		resetAllValue();
 		if ($firtLoad) {
 			goto('/');
+		}
+		if($newJadwalSiram){
+			loadJadwal();
+			newJadwalSiram.set(false);
 		}
 		showjadwal = 0;
 	});
@@ -120,16 +125,22 @@
 		}
 
 		console.log('siram lahan ' + lahan + '=> ' + lahanSts + '(1=ON,0=OFF)');
-		kirimMsg('siram', lahan, 'cmd', lahanSts);
+		if (!$demoMode) {
+			kirimMsg('siram', lahan, 'cmd', lahanSts);
+		}
 	}
 
 	function setUseLengas() {
+		let ln = '0';
 		if ($useLengas) {
 			console.log('pake lengas');
-			kirimMsg('siram', '0', 'useLengas', '1');
+			ln = '1';
 		} else {
 			console.log('lengas off');
-			kirimMsg('siram', '0', 'useLengas', '0');
+			ln = '0';
+		}
+		if (!$demoMode) {
+			kirimMsg('siram', '0', 'useLengas', ln);
 		}
 	}
 
@@ -184,7 +195,9 @@
 
 	function trigerLengasChange() {
 		console.log('triger lengas: ' + $ambangLengas);
-		kirimMsg('siram', '0', 'setAmbang', String($ambangLengas));
+		if (!$demoMode) {
+			kirimMsg('siram', '0', 'setAmbang', String($ambangLengas));
+		}
 	}
 	function packingJadwal() {
 		//format
@@ -269,10 +282,12 @@
 
 	function simpanJadwalSiram() {
 		let jwl = packingJadwal();
-		kirimMsg('siram', 0, 'setJadwal', jwl);
 		console.log(jwl);
-		showjadwal = 0
+		showjadwal = 0;
 		showModal = false;
+		if (!$demoMode) {
+			kirimMsg('siram', 0, 'setJadwal', jwl);
+		}
 	}
 
 	function loadJadwal() {
@@ -289,6 +304,7 @@
 		}
 		waktuSiram1 = jadwal1[3] + ':';
 		waktuSiram1 += jadwal1[4];
+		
 		for (let i = 0; i < 7; i++) {
 			if (jadwal1[5 + i] === '1') {
 				cekHari1[i] = true;
@@ -311,8 +327,8 @@
 		} else {
 			jadwal2Enable = false;
 		}
-		waktuSiram2 = jadwal1[3] + ':';
-		waktuSiram2 += jadwal1[4];
+		waktuSiram2 = jadwal2[3] + ':';
+		waktuSiram2 += jadwal2[4];
 		for (let i = 0; i < 7; i++) {
 			if (jadwal2[5 + i] === '1') {
 				cekHari2[i] = true;
@@ -335,8 +351,8 @@
 		} else {
 			jadwal3Enable = false;
 		}
-		waktuSiram3 = jadwal1[3] + ':';
-		waktuSiram3 += jadwal1[4];
+		waktuSiram3 = jadwal3[3] + ':';
+		waktuSiram3 += jadwal3[4];
 		for (let i = 0; i < 7; i++) {
 			if (jadwal3[5 + i] === '1') {
 				cekHari3[i] = true;
@@ -352,6 +368,9 @@
 			}
 		}
 		durasiSiram3 = jadwal1[18];
+		waktuSiram1 = waktuSiram1
+		waktuSiram2 = waktuSiram2
+		waktuSiram3 = waktuSiram3
 	}
 
 	function showJadwalSiram() {
@@ -359,6 +378,7 @@
 		if ($newJadwalSiram) {
 			loadJadwal();
 			newJadwalSiram.set(false);
+			//
 		}
 	}
 </script>
@@ -368,6 +388,9 @@
 		<div>
 			<img src=" /hd_siram1.png" alt="hd_siram" />
 		</div>
+		{#if $demoMode}
+			<div class="text-center bg-red-500 text-white w-12 h-6">Demo</div>
+		{/if}
 		<div class="grid grid-cols-9 content-center justify-center mt-6">
 			<!--status lengas-->
 			<div></div>
@@ -480,33 +503,30 @@
 								<div>
 									<div class="text-xs text-black-300">
 										<small>
-										
-										{#if jadwal1Enable}
-											{waktuSiram1}
-										{:else}
-											--:--
-										{/if}
-									</small>
+											{#if jadwal1Enable}
+												{waktuSiram1}
+											{:else}
+												--:--
+											{/if}
+										</small>
 									</div>
 									<div class="text-xs text-black-300">
 										<small>
-										
-										{#if jadwal2Enable}
-											{waktuSiram2}
-										{:else}
-											--:--
-										{/if}
-									</small>
+											{#if jadwal2Enable}
+												{waktuSiram2}
+											{:else}
+												--:--
+											{/if}
+										</small>
 									</div>
 									<div class="text-xs text-black-300">
 										<small>
-										
-										{#if jadwal3Enable}
-											{waktuSiram3}
-										{:else}
-											--:--
-										{/if}
-									</small>
+											{#if jadwal3Enable}
+												{waktuSiram3}
+											{:else}
+												--:--
+											{/if}
+										</small>
 									</div>
 								</div>
 								<div class="grid justify-items-center">
@@ -548,15 +568,36 @@
 <!--Jadwal-->
 <Modal bind:showModal>
 	<h2 slot="header" class="text-xl font-bold text-center">Jadwal Penyiraman</h2>
-<!--
+	<!--
 	class={kategoriNow === kategori
 					? "text-white bg-orange-500"
 					: "text-black bg-white"}
 -->
 	<div class="grid grid-cols-3 gap-4 w-full my-4">
-		<button class={jadwal1Enable?"border rounded h-12 font-bold bg-green-700 text-white":"border rounded h-12 font-bold bg-green-100 text-black"} on:click={() => (showjadwal = 1)}><div class="text-xs"><small>Jadwal1</small></div>{waktuSiram1} </button>
-		<button class={jadwal2Enable?"border rounded h-12 font-bold bg-green-700 text-white":"border rounded h-12 font-bold bg-green-100 text-black"} on:click={() => (showjadwal = 2)}><div class="text-xs"><small>Jadwal2</small></div>{waktuSiram2} </button>
-		<button class={jadwal3Enable?"border rounded h-12 font-bold bg-green-700 text-white":"border rounded h-12 font-bold bg-green-100 text-black"} on:click={() => (showjadwal = 3)}><div class="text-xs"><small>Jadwal3</small></div>{waktuSiram3} </button>
+		<button
+			class={jadwal1Enable
+				? 'border rounded h-12 font-bold bg-green-700 text-white'
+				: 'border rounded h-12 font-bold bg-green-100 text-black'}
+			on:click={() => (showjadwal = 1)}
+			><div class="text-xs"><small>Jadwal1</small></div>
+			{waktuSiram1}
+		</button>
+		<button
+			class={jadwal2Enable
+				? 'border rounded h-12 font-bold bg-green-700 text-white'
+				: 'border rounded h-12 font-bold bg-green-100 text-black'}
+			on:click={() => (showjadwal = 2)}
+			><div class="text-xs"><small>Jadwal2</small></div>
+			{waktuSiram2}
+		</button>
+		<button
+			class={jadwal3Enable
+				? 'border rounded h-12 font-bold bg-green-700 text-white'
+				: 'border rounded h-12 font-bold bg-green-100 text-black'}
+			on:click={() => (showjadwal = 3)}
+			><div class="text-xs"><small>Jadwal3</small></div>
+			{waktuSiram3}
+		</button>
 	</div>
 	{#if showjadwal === 1}
 		<!-- jadwal 1-->
@@ -778,15 +819,14 @@
 			</div>
 		</div>
 	{/if}
-	{#if  showjadwal !== 0}
-	<div class="grid justify-items-center">
-		<button
-			on:click={() => simpanJadwalSiram()}
-			class="w-1/2 h-12 border rounded-lg bg-green-900 text-white mt-4 mb-4">Simpan Jadwal</button
-		>
-	</div>
-	{/if}	
-	
+	{#if showjadwal !== 0}
+		<div class="grid justify-items-center">
+			<button
+				on:click={() => simpanJadwalSiram()}
+				class="w-1/2 h-12 border rounded-lg bg-green-900 text-white mt-4 mb-4">Simpan Jadwal</button
+			>
+		</div>
+	{/if}
 </Modal>
 
 <style>

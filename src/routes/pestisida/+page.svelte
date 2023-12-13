@@ -56,6 +56,10 @@
 		if ($firtLoad) {
 			goto('/');
 		}
+		if($newJadwalPestisida){
+			loadJadwal();
+			newJadwalPestisida.set(false);
+		}
 	});
 
 	function semprotPestisida(lahan) {
@@ -316,8 +320,8 @@
 		} else {
 			jadwal2Enable = false;
 		}
-		waktuSemprot2 = jadwal1[3] + ':';
-		waktuSemprot2 += jadwal1[4];
+		waktuSemprot2 = jadwal2[3] + ':';
+		waktuSemprot2 += jadwal2[4];
 		for (let i = 0; i < 7; i++) {
 			if (jadwal2[5 + i] === '1') {
 				cekHari2[i] = true;
@@ -342,8 +346,8 @@
 		} else {
 			jadwal3Enable = false;
 		}
-		waktuSemprot3 = jadwal1[3] + ':';
-		waktuSemprot3 += jadwal1[4];
+		waktuSemprot3 = jadwal3[3] + ':';
+		waktuSemprot3 += jadwal3[4];
 		for (let i = 0; i < 7; i++) {
 			if (jadwal3[5 + i] === '1') {
 				cekHari3[i] = true;

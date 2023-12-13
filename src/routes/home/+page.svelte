@@ -1,18 +1,37 @@
 <script>
 	import { goto } from '$app/navigation';
-	import {suhuUdara,kelembabanUdara,lengas1} from "$lib/store/stores"
+	import { kirimMsg } from '$lib/mqttHandle';
+	import { suhuUdara, kelembabanUdara, lengas1, resetAllValue, demoMode } from '$lib/store/stores';
+	import { onMount } from 'svelte';
+	
+	onMount(() => {
+		resetAllValue();
+	});
 
-	
-	
+	function openPage(page){
+		if(page === 1){
+			kirimMsg("siram",0,"getJadwal",'1')
+			goto('/siram')
+		}else if(page === 2){
+			goto('/pestisida')
+		}else if(page === 3){
+			goto('/biopest')
+		}
+	}
+
 	let suhuTanah = '-';
 </script>
 
 <div class="h-screen w-screen bg-zinc-800">
 	<div class="mainbg h-full w-full max-w-md mx-auto flex flex-col">
-		<div >
+		<div>
 			<img src="/hd_home.png" alt="hd_home" />
 		</div>
-		<div class="grid grid-cols-12 h-16 w-full ">
+		{#if $demoMode}
+			<div class="text-center bg-red-500 text-white w-12 h-6">Demo</div>
+		{/if}
+
+		<div class="grid grid-cols-12 h-16 w-full">
 			<div class="col-span-2"></div>
 			<div class="col-span-8 h-full bg-white rounded-lg mt-0 shadow-xl">
 				<div class="grid grid-cols-3">
@@ -79,7 +98,10 @@
 
 		<div class="grid grid-cols-11 gap-8 h-24 w-full mt-6">
 			<div class="col-span-1"></div>
-			<button on:click={() => goto('/siram')} class="col-span-3 h-full bg-white rounded-lg shadow-xl">
+			<button
+				on:click={() => openPage(1)}
+				class="col-span-3 h-full bg-white rounded-lg shadow-xl"
+			>
 				<div class="text-xs font-bold text-center mt-1">
 					<small>Penyiramam</small>
 				</div>
@@ -87,7 +109,10 @@
 					<img src=" /penyiraman.png" alt="siram" />
 				</div>
 			</button>
-			<button on:click={() => goto('/pestisida')} class="col-span-3 h-full bg-white rounded-lg shadow-xl">
+			<button
+				on:click={() => openPage(2)}
+				class="col-span-3 h-full bg-white rounded-lg shadow-xl"
+			>
 				<div class="text-xs font-bold text-center mt-1">
 					<small>Pestisida</small>
 				</div>
@@ -95,7 +120,10 @@
 					<img src=" /pestisida.png" alt="pestisida" />
 				</div>
 			</button>
-			<button on:click={() => goto('/biopest')} class="col-span-3 h-full bg-white rounded-lg shadow-xl">
+			<button
+				on:click={() => openPage(3)}
+				class="col-span-3 h-full bg-white rounded-lg shadow-xl"
+			>
 				<div class="text-xs font-bold text-center mt-1">
 					<small>Biopestisida</small>
 				</div>
@@ -110,7 +138,7 @@
 
 <style>
 	.mainbg {
-		background-image: url('/bg_home.png');		
+		background-image: url('/bg_home.png');
 		background-position: center;
 		background-size: cover;
 	}
