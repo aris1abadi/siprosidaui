@@ -2,6 +2,7 @@ import { writable } from 'svelte/store';
 
 export const firtLoad = writable(true)
 export const demoMode =writable(true)
+export const runMode = writable(0); //0 = menunggu,1 penyiraman,2 pestisida,3 biopestisida
 
 export const mqttStatus = writable(0);
 export const lengas1 = writable(0);
@@ -25,6 +26,8 @@ export const siram_status = writable(false)
 export const volumeAir = writable(0)
 export const jadwalSiram =writable(" ")
 export const newJadwalSiram = writable(false)
+export const durasiManual = writable(5)
+
 
 //biopest
 export const dosisAirBiopest = writable(1)
@@ -63,8 +66,8 @@ export function resetAllValue() {
     sensorFlowAir.set(0)
 
     //siram var
-    useLengas.set(false)
-    ambangLengas.set(60)
+    //useLengas.set(false)
+    //ambangLengas.set(60)
     lahan1_status.set(false)
     lahan2_status.set(false)
     lahan3_status.set(false)
@@ -72,9 +75,10 @@ export function resetAllValue() {
     siram_status.set(false)
     volumeAir.set(0)
 
+
     //pestisida
-    dosisAirBiopest.set(1)
-    dosisBiopest.set(1)
+    //dosisAirBiopest.set(1)
+    //dosisBiopest.set(1)
     lahan1Biopest_status.set(false)
     lahan2Biopest_status.set(false)
     lahan3Biopest_status.set(false)
@@ -83,8 +87,8 @@ export function resetAllValue() {
     volumeSemprotBiopest.set(0)
 
     //biopest
-    dosisAirPestisida.set(1)
-    dosisPestisida.set(1)
+    //dosisAirPestisida.set(1)
+    //dosisPestisida.set(1)
     lahan1Pestisida_status.set(false)
     lahan2Pestisida_status.set(false)
     lahan3Pestisida_status.set(false)

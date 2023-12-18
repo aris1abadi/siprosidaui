@@ -6,6 +6,7 @@
 	
 	onMount(() => {
 		resetAllValue();
+		getAllStatus();
 	});
 
 	function openPage(page){
@@ -13,10 +14,16 @@
 			kirimMsg("siram",0,"getJadwal",'1')
 			goto('/siram')
 		}else if(page === 2){
+			kirimMsg("pestisida",0,"getJadwal",'1')
 			goto('/pestisida')
 		}else if(page === 3){
+			kirimMsg("biopest",0,"getJadwal",'1')
 			goto('/biopest')
 		}
+	}
+
+	function getAllStatus(){
+		kirimMsg("kontrol",0,"getAllStatus","0");
 	}
 
 	let suhuTanah = '-';
@@ -132,6 +139,14 @@
 				</div>
 			</button>
 			<div class="col-span-1"></div>
+		</div>
+
+		<div class="grid grid-cols-5 w-full h-12 justify-items-center mt-16">
+			<button on:click={() => goto('/')}>
+				<img class="h-8 w-8" src="/logout.png" alt="btn_out" />
+			</button>
+			<div class="col-span-4"></div>
+			
 		</div>
 	</div>
 </div>

@@ -11,16 +11,15 @@
 	bind:this={dialog}
 	on:close={() => (showModal = false)}
 	on:click|self={() => dialog.close()}
-	class="h-full w-full"
+	class="w-11/12"
 >
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div on:click|stopPropagation>
-		<slot name="header" />
-		<hr />
+		
 		<slot />
 		<hr />
 		<!-- svelte-ignore a11y-autofocus -->
-		<button class="w-full text-right text-red-700" autofocus on:click={() => dialog.close()}>Tutup Jadwal</button>
+		<button class="w-full text-right text-red-700" autofocus on:click={() => dialog.close()}>Tutup</button>
 	</div>
 </dialog>
 

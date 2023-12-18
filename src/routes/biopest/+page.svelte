@@ -13,11 +13,16 @@
 		firtLoad,
 		jadwalBiopest,
 		newJadwalBiopest,
-		volumeAir
-	} from "$lib/store/stores"
+		volumeAir,
+		resetAllValue,
+		runMode,
+		demoMode
+	} from '$lib/store/stores';
 	import Modal from '$lib/Modal.svelte';
 	import SveltyPicker from 'svelty-picker';
 
+	let showjadwal = 0;
+	let showMode = 0;
 	let dosisAirBiopest1 = 1;
 	let dosisBiopest1 = 1;
 	let dosisAirBiopest2 = 1;
@@ -32,7 +37,7 @@
 	let waktuSemprot2 = '06:00';
 	let waktuSemprot3 = '06:00';
 
-	let hari = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+	let hari = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 	let lahan = ['Lahan 1', 'Lahan 2', 'Lahan 3', 'Lahan 4'];
 	let pilihanHari1 = [0, 0, 0, 0, 0, 0, 0];
 	let pilihanHari2 = [0, 0, 0, 0, 0, 0, 0];
@@ -50,118 +55,159 @@
 
 	let showModal = false;
 
-	onMount(()=>{
-		if($firtLoad){
+	onMount(() => {
+		resetAllValue();
+		if ($firtLoad) {
 			goto('/');
 		}
-	})
+		//if($newJadwalPestisida){
+		if ($jadwalBiopest.length === 120) {
+			console.log('jadwal len: ' + $jadwalBiopest.length);
+			loadJadwal();
+		}
+		getAllStatus();
+		showjadwal = 0;
+		//	newJadwalPestisida.set(false);
+		//}
+	});
 
-	
+	function getAllStatus() {
+		kirimMsg('kontrol', 0, 'getAllStatus', '0');
+	}
+
 	function semprotBiopest(lahan) {
 		let msg = '0';
-		let readySend = false
-		if (lahan === 0) {
-			if ($biopest_status) {
-					if(!$lahan1Biopest_status && !$lahan2Biopest_status && !$lahan3Biopest_status && !$lahan4Biopest_status ){
-						$biopest_status = false;
-						msg = '0';
-						alert("Pilih lahan yang akan disemprot Biopestisida")
-					}else{
-						msg = '1'
-						readySend = true
-					}
-					
+		if ($runMode === 0 || $runMode === 3) {
+			runMode.set(3);
+			if (lahan === 0) {
+				if ($biopest_status) {
+					msg = '1';
+
+					$lahan1Biopest_status = true;
+					$lahan2Biopest_status = true;
+					$lahan3Biopest_status = true;
+					$lahan4Biopest_status = true;
 				} else {
-					readySend = true
 					msg = '0';
 					$lahan1Biopest_status = false;
 					$lahan2Biopest_status = false;
 					$lahan3Biopest_status = false;
 					$lahan4Biopest_status = false;
 				}
-		} else if (lahan == 1) {
-			if ($lahan1Biopest_status) {
-				msg = '1';
-				$biopest_status = true;
-			} else {
-				msg = '0';
-				if (!$lahan2Biopest_status && !$lahan3Biopest_status && !$lahan4Biopest_status) {
-					$biopest_status = false;
+			} else if (lahan === 1) {
+				if ($lahan1Biopest_status) {
+					msg = '1';
+					$biopest_status = true;
+				} else {
+					msg = '0';
+					if (!$lahan2Biopest_status && !$lahan3Biopest_status && !$lahan4Biopest_status) {
+						$biopest_status = false;
+					}
+				}
+			} else if (lahan === 2) {
+				if ($lahan2Biopest_status) {
+					msg = '1';
+					$biopest_status = true;
+				} else {
+					msg = '0';
+					if (!$lahan1Biopest_status && !$lahan3Biopest_status && !$lahan4Biopest_status) {
+						$biopest_status = false;
+					}
+				}
+			} else if (lahan === 3) {
+				if ($lahan3Biopest_status) {
+					msg = '1';
+					$biopest_status = true;
+				} else {
+					msg = '0';
+					if (!$lahan2Biopest_status && !$lahan1Biopest_status && !$lahan4Biopest_status) {
+						$biopest_status = false;
+					}
+				}
+			} else if (lahan === 4) {
+				if ($lahan4Biopest_status) {
+					msg = '1';
+					$biopest_status = true;
+				} else {
+					msg = '0';
+					if (!$lahan2Biopest_status && !$lahan3Biopest_status && !$lahan1Biopest_status) {
+						$biopest_status = false;
+					}
 				}
 			}
-		} else if (lahan == 2) {
-			if ($lahan2Biopest_status) {
-				msg = '1';
-				$biopest_status = true;
+			//if (readySend) {
+			if (!$demoMode) {
+				kirimMsg('biopest', lahan, 'cmd', msg);
 			} else {
-				msg = '0';
-				if (!$lahan1Biopest_status && !$lahan3Biopest_status && !$lahan4Biopest_status) {
-					$biopest_status = false;
-				}
+				alertDemo();
+				$lahan1Biopest_status = false;
+				$lahan2Biopest_status = false;
+				$lahan3Biopest_status = false;
+				$lahan4Biopest_status = false;
+				$biopest_status = false;
 			}
-		} else if (lahan == 3) {
-			if ($lahan3Biopest_status) {
-				msg = '1';
-				$biopest_status = true;
-			} else {
-				msg = '0';
-				if (!$lahan2Biopest_status && !$lahan1Biopest_status && !$lahan4Biopest_status) {
-					$biopest_status = false;
-				}
-			}
-		} else if (lahan == 4) {
-			if ($lahan4Biopest_status) {
-				msg = '1';
-				$biopest_status = true;
-			} else {
-				msg = '0';
-				if (!$lahan2Biopest_status && !$lahan3Biopest_status && !$lahan1Biopest_status) {
-					$biopest_status = false;
-				}
-			}
+		} else {
+			//
+			$lahan1Biopest_status = false;
+			$lahan2Biopest_status = false;
+			$lahan3Biopest_status = false;
+			$lahan4Biopest_status = false;
+			$biopest_status = false;
+			alertShow($runMode);
 		}
-		kirimMsg('biopest', lahan, 'cmd', msg);
 	}
 
-	function pilihLahanBiopest(lh){
-		let lahanSts = '0'
-		if(lh === 1){
-			if($lahan1Biopest_status){
-				lahanSts = '1'
-			}else{
-				lahanSts = '0'
+	function alertDemo() {
+		showModal = true;
+		showMode = 4;
+	}
+
+	function alertShow(val) {
+		showModal = true;
+		showMode = 3;
+	}
+
+	function pilihLahanBiopest(lh) {
+		let lahanSts = '0';
+		if (lh === 1) {
+			if ($lahan1Biopest_status) {
+				lahanSts = '1';
+			} else {
+				lahanSts = '0';
 			}
-			
-		}else if(lh === 2){
-			if($lahan2Biopest_status){
-				lahanSts = '1'
-			}else{
-				lahanSts = '0'
+		} else if (lh === 2) {
+			if ($lahan2Biopest_status) {
+				lahanSts = '1';
+			} else {
+				lahanSts = '0';
 			}
-		}else if(lh === 3){
-			if($lahan3Biopest_status){
-				lahanSts = '1'
-			}else{
-				lahanSts = '0'
+		} else if (lh === 3) {
+			if ($lahan3Biopest_status) {
+				lahanSts = '1';
+			} else {
+				lahanSts = '0';
 			}
-		}else if(lh === 4){
-			if($lahan4Biopest_status){
-				lahanSts = '1'
-			}else{
-				lahanSts = '0'
+		} else if (lh === 4) {
+			if ($lahan4Biopest_status) {
+				lahanSts = '1';
+			} else {
+				lahanSts = '0';
 			}
 		}
 		kirimMsg('biopest', lh, 'lahan', lahanSts);
 	}
 
-	function simpanDosisAirBiopest(){
-		kirimMsg("biopest",0,"dosisAirBiopest",String($dosisAirBiopest))
+	function simpanDosisAirBiopest() {
+		if(!$demoMode){
+		kirimMsg('biopest', 0, 'dosisAirBiopest', String($dosisAirBiopest));
+		}
 	}
-	function simpanDosisBiopest(){
-		kirimMsg("biopest",0,"dosisBiopest",String($dosisBiopest))
+	function simpanDosisBiopest() {
+		if(!$demoMode){
+		kirimMsg('biopest', 0, 'dosisBiopest', String($dosisBiopest));
+		}
 	}
 
-	
 	function lahan1Click(idx) {
 		if (cekLahan1[idx]) {
 			pilihanLahan1[idx] = 1;
@@ -170,7 +216,6 @@
 		}
 		//console.log(pilihanLahan1)
 	}
-
 	function lahan2Click(idx) {
 		if (cekLahan2[idx]) {
 			pilihanLahan2[idx] = 1;
@@ -179,7 +224,6 @@
 		}
 		//console.log(pilihanLahan1)
 	}
-
 	function lahan3Click(idx) {
 		if (cekLahan3[idx]) {
 			pilihanLahan3[idx] = 1;
@@ -202,7 +246,6 @@
 			pilihanHari2[idx] = 0;
 		}
 	}
-
 	function pilihanHari3Click(idx) {
 		if (cekHari3[idx]) {
 			pilihanHari3[idx] = 1;
@@ -210,7 +253,6 @@
 			pilihanHari3[idx] = 0;
 		}
 	}
-
 	function packingJadwal() {
 		//format
 		//enable,idx,jenis,H,M,s,s,r,k,j,s,m,l1,l2,l3,l4,A,P,T;enable,idx,jenis,H,M,s,s,r,k,j,s,m,l1,l2,l3,l4,A,P,T;enable,idx,jenis,H,M,s,s,r,k,j,s,m,l1,l2,l3,l4,A,P,T
@@ -296,14 +338,18 @@
 		jw += ';';
 		return jw;
 	}
-
-	function simpanJadwalBiopest() {
+	function simpanJadwalBiopest(idxJadwal) {
+		//cek pilihan lahan dan hari
+		showMode = 1;
+		showjadwal = 0;
+		if($demoMode){
+			alertDemo()
+		}else{
 
 		let jwl = packingJadwal();
-		showModal = false
-		showModal = showModal
 		kirimMsg('biopest', 0, 'setJadwal', jwl);
-		console.log(jwl);
+		//console.log(jwl);
+		}
 	}
 
 	function loadJadwal() {
@@ -393,13 +439,12 @@
 
 	function showJadwalBiopest() {
 		showModal = true;
+		showMode = 1;
 		if ($newJadwalBiopest) {
 			loadJadwal();
 			newJadwalBiopest.set(false);
 		}
 	}
-		
-	
 </script>
 
 <div class="h-screen w-screen bg-zinc-800">
@@ -421,12 +466,19 @@
 									type="number"
 									bind:value={$dosisAirBiopest}
 									on:change={() => simpanDosisAirBiopest()}
-									min=1
-									max=20
+									min="1"
+									max="20"
 								/>
 								<span class="text-xs">Liter</span>
 							</div>
-							<input class="w-3/4 h-2 mt-2" type="range" on:change={() => simpanDosisAirBiopest()} bind:value={$dosisAirBiopest} min=1 max=20 />
+							<input
+								class="w-3/4 h-2 mt-2"
+								type="range"
+								on:change={() => simpanDosisAirBiopest()}
+								bind:value={$dosisAirBiopest}
+								min="1"
+								max="20"
+							/>
 						</div>
 					</label>
 
@@ -441,8 +493,8 @@
 									type="number"
 									bind:value={$dosisBiopest}
 									on:change={() => simpanDosisBiopest()}
-									min=1
-									max=100
+									min="1"
+									max="100"
 								/>
 								<span class="text-xs">mL</span>
 							</div>
@@ -451,8 +503,8 @@
 								type="range"
 								bind:value={$dosisBiopest}
 								on:change={() => simpanDosisBiopest()}
-								min=1
-								max=100
+								min="1"
+								max="100"
 							/>
 						</div>
 					</label>
@@ -465,7 +517,7 @@
 							type="checkbox"
 							class="toggle toggle-accent"
 							bind:checked={$lahan1Biopest_status}
-							on:change={() => pilihLahanBiopest(1)}
+							on:change={() => semprotBiopest(1)}
 						/></label
 					>
 
@@ -475,7 +527,7 @@
 							type="checkbox"
 							class="toggle toggle-accent"
 							bind:checked={$lahan2Biopest_status}
-							on:change={() => pilihLahanBiopest(2)}
+							on:change={() => semprotBiopest(2)}
 						/></label
 					>
 					<label class="text-xs font-bold text-center"
@@ -484,7 +536,7 @@
 							type="checkbox"
 							class="toggle toggle-accent"
 							bind:checked={$lahan3Biopest_status}
-							on:change={() => pilihLahanBiopest(3)}
+							on:change={() => semprotBiopest(3)}
 						/></label
 					>
 					<label class="text-xs font-bold text-center"
@@ -493,44 +545,48 @@
 							type="checkbox"
 							class="toggle toggle-accent"
 							bind:checked={$lahan4Biopest_status}
-							on:change={() => pilihLahanBiopest(4)}
+							on:change={() => semprotBiopest(4)}
 						/></label
 					>
 				</div>
 
-				<div class="grid grid-cols-3 px-6 gap-4 my-4 justify-items-center">
-					<div class="text-center text-xs">Jadwal</div>
+				<!-- kontrol pestisida-->
+				<div class="grid grid-cols-3 w-full h-24 my-4 justify-items-center">
+					<div class="text-sm font-bold text-center"><small>Jadwal</small></div>
 					<div></div>
-					<div class="text-center text-xs">Semprot</div>
+					<div class="text-sm font-bold mb-0"><small>Semprot</small></div>
 					<button
 						on:click={() => showJadwalBiopest()}
-						class="w-3/4 h-16 rounded-xl shadow-lg border"
+						class="w-3/4 h-16 rounded-lg shadow-lg border border-gray-900"
 					>
 						<div class="grid grid-cols-2 gap-1">
 							<div>
 								<div class="text-xs text-black-300">
-									1-
-									{#if jadwal1Enable}
-										{waktuSemprot1}
-									{:else}
-										--:--
-									{/if}
+									<small>
+										{#if jadwal1Enable}
+											{waktuSemprot1}
+										{:else}
+											--:--
+										{/if}
+									</small>
 								</div>
 								<div class="text-xs text-black-300">
-									2-
-									{#if jadwal2Enable}
-										{waktuSemprot2}
-									{:else}
-										--:--
-									{/if}
+									<small>
+										{#if jadwal2Enable}
+											{waktuSemprot2}
+										{:else}
+											--:--
+										{/if}
+									</small>
 								</div>
 								<div class="text-xs text-black-300">
-									3-
-									{#if jadwal3Enable}
-										{waktuSemprot3}
-									{:else}
-										--:--
-									{/if}
+									<small>
+										{#if jadwal3Enable}
+											{waktuSemprot3}
+										{:else}
+											--:--
+										{/if}
+									</small>
 								</div>
 							</div>
 							<div class="grid justify-items-center">
@@ -546,19 +602,18 @@
 						<div class="text-center font-bold text-lg">{$volumeAir} Ltr</div>
 					</div>
 
-					<label class="swap swap-flip h-12 w-12">
+					<label class="swap swap-flip h-16 w-16">
 						<!-- this hidden checkbox controls the state -->
 						<input
 							type="checkbox"
 							bind:checked={$biopest_status}
 							on:change={() => semprotBiopest(0)}
 						/>
-
 						<div class="swap-on">
-							<img class="ml-2" src=" /btnhijau.jpeg" alt="btn_on" />
+							<img class="ml-1" src=" /btnhijau.jpeg" alt="btn_on" />
 						</div>
 						<div class="swap-off">
-							<img class="ml-2" src=" /btnmerah.jpeg" alt="btn_off" />
+							<img class="ml-1" src=" /btnmerah.jpeg" alt="btn_off" />
 						</div>
 					</label>
 				</div>
@@ -566,338 +621,416 @@
 			<div></div>
 		</div>
 
-		<div class="grid justify-items-start">
-			<button class="h-8 w-8 ml-8 mt-24" on:click={() => goto('/home')}>
-				<img src=" /btn_home2.png" alt="btn_home" />
+		<div class="grid grid-cols-5 w-full h-12 justify-items-center mt-16">
+			<button on:click={() => goto('/')}>
+				<img class="h-8 w-8" src="/logout.png" alt="btn_out" />
+			</button>
+			<div class="col-span-3"></div>
+			<button on:click={() => goto('/home')}>
+				<img class="h-8 w-8" src="/btn_home2.png" alt="btn_home" />
 			</button>
 		</div>
 	</div>
 </div>
 <!--Jadwal-->
 <Modal bind:showModal>
-	<h2 slot="header" class="text-xl font-bold text-center">Jadwal Biopestisida</h2>
-	<!-- jadwal 1-->
-	<div
-		class="grid grid-cols-10 gap-2 mt-4 justify-items-center border rounded-lg border-1 shadow-xl"
-	>
-		<!--waktu dan dosis-->
-		<div class="col-span-10 h-20 mt-2">
-			<div class="grid grid-cols-3 gap-2 px-2 justify-items-center">
-				<div class="border rounded border-emerald-950">
-					<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
-						Waktu
+	{#if showMode === 1}
+		<h3 class="text-xl font-bold text-center">Jadwal Biopestisida</h3>
+		<hr />
+
+		<div class="grid grid-cols-3 gap-4 w-full my-4">
+			<button
+				class={jadwal1Enable
+					? 'border rounded h-12 font-bold bg-green-700 text-white'
+					: 'border rounded h-12 font-bold bg-green-100 text-black'}
+				on:click={() => (showjadwal = 1)}
+				><div class="text-xs"><small>Jadwal1</small></div>
+				{waktuSemprot1}
+			</button>
+			<button
+				class={jadwal2Enable
+					? 'border rounded h-12 font-bold bg-green-700 text-white'
+					: 'border rounded h-12 font-bold bg-green-100 text-black'}
+				on:click={() => (showjadwal = 2)}
+				><div class="text-xs"><small>Jadwal2</small></div>
+				{waktuSemprot2}
+			</button>
+			<button
+				class={jadwal3Enable
+					? 'border rounded h-12 font-bold bg-green-700 text-white'
+					: 'border rounded h-12 font-bold bg-green-100 text-black'}
+				on:click={() => (showjadwal = 3)}
+				><div class="text-xs"><small>Jadwal3</small></div>
+				{waktuSemprot3}
+			</button>
+		</div>
+		<!-- jadwal 1-->
+		{#if showjadwal === 1}
+			<div
+				class="grid grid-cols-10 gap-2 mt-4 justify-items-center border rounded-lg border-1 shadow-xl"
+			>
+				<div class=" col-span-10 text-center">Jadwal 1</div>
+				<!--waktu dan dosis-->
+				<div class="col-span-10 h-20 mt-2">
+					<div class="grid grid-cols-3 gap-2 px-2 justify-items-center">
+						<div class="border rounded border-emerald-950">
+							<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
+								Waktu
+							</div>
+							<SveltyPicker
+								bind:value={waktuSemprot1}
+								inputClasses="w-3/4 font-bold text-lg text-center mx-4"
+								placeholder="06:30"
+								format="hh:ii"
+								displayFormat="hh:ii "
+							/>
+						</div>
+						<label class=" border rounded border-emerald-950">
+							<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
+								Air(liter)
+							</div>
+							<div class="grid justify-items-center mb-2">
+								<div>
+									<input
+										class="text-center text-l w-full font-bold"
+										type="number"
+										bind:value={dosisAirBiopest1}
+										min="1"
+										max="20"
+									/>
+								</div>
+								<input
+									class="w-3/4 h-2 mt-2"
+									type="range"
+									bind:value={dosisAirBiopest1}
+									min="1"
+									max="20"
+								/>
+							</div>
+						</label>
+						<label class=" border rounded border-emerald-950">
+							<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
+								Biopestisida(mL)
+							</div>
+							<div class="grid justify-items-center mb-2">
+								<div>
+									<input
+										class="text-center text-l w-full font-bold"
+										type="number"
+										bind:value={dosisBiopest1}
+										min="1"
+										max="50"
+									/>
+								</div>
+								<input
+									class="w-3/4 h-2 mt-2"
+									type="range"
+									bind:value={dosisBiopest1}
+									min="1"
+									max="50"
+								/>
+							</div>
+						</label>
 					</div>
-					<SveltyPicker
-						bind:value={waktuSemprot1}
-						inputClasses="w-3/4 font-bold text-lg text-center mx-4"
-						placeholder="06:30"
-						format="hh:ii"
-						displayFormat="hh:ii "
+				</div>
+				<!--button enable-->
+				<div class="col-span-2">
+					<input
+						type="checkbox"
+						class="ml-4 mt-1 toggle toggle-primary"
+						bind:checked={jadwal1Enable}
 					/>
 				</div>
-				<label class=" border rounded border-emerald-950">
-					<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
-						Air(liter)
+				<!-- hari-->
+				<div class="col-span-8 text-xs">
+					<div class="grid grid-cols-7 gap-4 mb-2 ml-1 justify-items-center">
+						{#each hari as hariNow, idx}
+							<label class="text-xs font-bold">
+								<div><small>{hariNow}</small></div>
+								<input
+									type="checkbox"
+									bind:checked={cekHari1[idx]}
+									on:change={() => pilihanHari1Click(idx)}
+								/>
+							</label>
+						{/each}
 					</div>
-					<div class="grid justify-items-center mb-2">
-						<div>
-							<input
-								class="text-center text-l w-full font-bold"
-								type="number"
-								bind:value={dosisAirBiopest1}
-								min=1
-								max=20
+				</div>
+
+				<div class="col-span-2"></div>
+
+				<div class="col-span-8 text-xs border mb-2 px-2">
+					<div class="grid grid-cols-4 gap-4 p-2 justify-items-center">
+						{#each lahan as lahanNow, idx}
+							<label>
+								<input
+									type="checkbox"
+									bind:checked={cekLahan1[idx]}
+									on:change={() => lahan1Click(idx)}
+								/>
+								<small>{lahanNow}</small>
+							</label>
+						{/each}
+					</div>
+				</div>
+			</div>
+
+			<!-- jadwal 2-->
+		{:else if showjadwal === 2}
+			<div
+				class="grid grid-cols-10 gap-2 mt-4 justify-items-center border rounded-lg border-1 shadow-xl"
+			>
+				<div class=" col-span-10 text-center">Jadwal 2</div>
+				<!--waktu dan dosis-->
+				<div class="col-span-10 h-20 mt-2">
+					<div class="grid grid-cols-3 gap-2 px-2 justify-items-center">
+						<div class="border rounded border-emerald-950">
+							<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
+								Waktu
+							</div>
+							<SveltyPicker
+								bind:value={waktuSemprot2}
+								inputClasses="w-3/4 font-bold text-lg text-center mx-4"
+								placeholder="06:30"
+								format="hh:ii"
+								displayFormat="hh:ii "
 							/>
 						</div>
-						<input
-							class="w-3/4 h-2 mt-2"
-							type="range"
-							bind:value={dosisAirBiopest1}
-							min=1
-							max=20
-						/>
+						<label class=" border rounded border-emerald-950">
+							<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
+								Air(liter)
+							</div>
+							<div class="grid justify-items-center mb-2">
+								<div>
+									<input
+										class="text-center text-l w-full font-bold"
+										type="number"
+										bind:value={dosisAirBiopest2}
+										min="1"
+										max="20"
+									/>
+								</div>
+								<input
+									class="w-3/4 h-2 mt-2"
+									type="range"
+									bind:value={dosisAirBiopest2}
+									min="1"
+									max="20"
+								/>
+							</div>
+						</label>
+						<label class=" border rounded border-emerald-950">
+							<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
+								Biopestisida(mL)
+							</div>
+							<div class="grid justify-items-center mb-2">
+								<div>
+									<input
+										class="text-center text-l w-full font-bold"
+										type="number"
+										bind:value={dosisBiopest2}
+										min="1"
+										max="50"
+									/>
+								</div>
+								<input
+									class="w-3/4 h-2 mt-2"
+									type="range"
+									bind:value={dosisBiopest2}
+									min="1"
+									max="50"
+								/>
+							</div>
+						</label>
 					</div>
-				</label>
-				<label class=" border rounded border-emerald-950">
-					<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
-						Biopestisida(mL)
-					</div>
-					<div class="grid justify-items-center mb-2">
-						<div>
-							<input
-								class="text-center text-l w-full font-bold"
-								type="number"
-								bind:value={dosisBiopest1}
-								min=1
-								max=50
-							/>
-						</div>
-						<input
-							class="w-3/4 h-2 mt-2"
-							type="range"
-							bind:value={dosisBiopest1}
-							min=1
-							max=50
-						/>
-					</div>
-				</label>
-			</div>
-		</div>
-		<!--button enable-->
-		<div class="col-span-2">
-			<input type="checkbox" class="ml-4 mt-1 toggle toggle-primary" bind:checked={jadwal1Enable} />
-		</div>
-		<!-- hari-->
-		<div class="col-span-8 text-xs">
-			<div class="grid grid-cols-7 gap-4 mb-2 ml-1 justify-items-center">
-				{#each hari as hariNow, idx}
-					<label class="text-xs font-bold">
-						<div><small>{hariNow}</small></div>
-						<input
-							type="checkbox"
-							bind:group={cekHari1[idx]}
-							on:change={() => pilihanHari1Click(idx)}
-						/>
-					</label>
-				{/each}
-			</div>
-		</div>
-
-		<div class="col-span-2"></div>
-
-		<div class="col-span-8 text-xs border mb-2 px-2">
-			<div class="grid grid-cols-4 gap-4 p-2 justify-items-center">
-				{#each lahan as lahanNow, idx}
-					<label>
-						<input
-							type="checkbox"
-							bind:checked={cekLahan1[idx]}
-							on:change={() => lahan1Click(idx)}
-						/>
-						<small>{lahanNow}</small>
-					</label>
-				{/each}
-			</div>
-		</div>
-	</div>
-
-	<!-- jadwal 2-->
-	<div
-		class="grid grid-cols-10 gap-2 mt-4 justify-items-center border rounded-lg border-1 shadow-xl"
-	>
-		<!--waktu dan dosis-->
-		<div class="col-span-10 h-20 mt-2">
-			<div class="grid grid-cols-3 gap-2 px-2 justify-items-center">
-				<div class="border rounded border-emerald-950">
-					<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
-						Waktu
-					</div>
-					<SveltyPicker
-						bind:value={waktuSemprot2}
-						inputClasses="w-3/4 font-bold text-lg text-center mx-4"
-						placeholder="06:30"
-						format="hh:ii"
-						displayFormat="hh:ii "
+				</div>
+				<!--button enable-->
+				<div class="col-span-2">
+					<input
+						type="checkbox"
+						class="ml-4 mt-1 toggle toggle-primary"
+						bind:checked={jadwal2Enable}
 					/>
 				</div>
-				<label class=" border rounded border-emerald-950">
-					<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
-						Air(liter)
+				<!-- hari-->
+				<div class="col-span-8 text-xs">
+					<div class="grid grid-cols-7 gap-4 mb-2 ml-1 justify-items-center">
+						{#each hari as hariNow, idx}
+							<label class="text-xs font-bold">
+								<div><small>{hariNow}</small></div>
+								<input
+									type="checkbox"
+									bind:checked={cekHari2[idx]}
+									on:change={() => pilihanHari2Click(idx)}
+								/>
+							</label>
+						{/each}
 					</div>
-					<div class="grid justify-items-center mb-2">
-						<div>
-							<input
-								class="text-center text-l w-full font-bold"
-								type="number"
-								bind:value={dosisAirBiopest2}
-								min=1
-								max=20
+				</div>
+
+				<div class="col-span-2"></div>
+
+				<div class="col-span-8 text-xs border mb-2 px-2">
+					<div class="grid grid-cols-4 gap-4 p-2 justify-items-center">
+						{#each lahan as lahanNow, idx}
+							<label>
+								<input
+									type="checkbox"
+									bind:checked={cekLahan2[idx]}
+									on:change={() => lahan2Click(idx)}
+								/>
+								<small>{lahanNow}</small>
+							</label>
+						{/each}
+					</div>
+				</div>
+			</div>
+
+			<!-- jadwal 3-->
+		{:else if showjadwal === 3}
+			<div
+				class="grid grid-cols-10 gap-2 mt-4 justify-items-center border rounded-lg border-1 shadow-xl"
+			>
+				<div class=" col-span-10 text-center">Jadwal 3</div>
+				<!--waktu dan dosis-->
+				<div class="col-span-10 h-20 mt-2">
+					<div class="grid grid-cols-3 gap-2 px-2 justify-items-center">
+						<div class="border rounded border-emerald-950">
+							<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
+								Waktu
+							</div>
+							<SveltyPicker
+								bind:value={waktuSemprot3}
+								inputClasses="w-3/4 font-bold text-lg text-center mx-4"
+								placeholder="06:30"
+								format="hh:ii"
+								displayFormat="hh:ii "
 							/>
 						</div>
-						<input
-							class="w-3/4 h-2 mt-2"
-							type="range"
-							bind:value={dosisAirBiopest2}
-							min=1
-							max=20
-						/>
+						<label class=" border rounded border-emerald-950">
+							<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
+								Air(liter)
+							</div>
+							<div class="grid justify-items-center mb-2">
+								<div>
+									<input
+										class="text-center text-l w-full font-bold"
+										type="number"
+										bind:value={dosisAirBiopest3}
+										min="1"
+										max="20"
+									/>
+								</div>
+								<input
+									class="w-3/4 h-2 mt-2"
+									type="range"
+									bind:value={dosisAirBiopest3}
+									min="1"
+									max="20"
+								/>
+							</div>
+						</label>
+						<label class=" border rounded border-emerald-950">
+							<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
+								Biopestisida(mL)
+							</div>
+							<div class="grid justify-items-center mb-2">
+								<div>
+									<input
+										class="text-center text-l w-full font-bold"
+										type="number"
+										bind:value={dosisBiopest3}
+										min="1"
+										max="50"
+									/>
+								</div>
+								<input
+									class="w-3/4 h-2 mt-2"
+									type="range"
+									bind:value={dosisBiopest3}
+									min="1"
+									max="50"
+								/>
+							</div>
+						</label>
 					</div>
-				</label>
-				<label class=" border rounded border-emerald-950">
-					<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
-						Biopestisida(mL)
-					</div>
-					<div class="grid justify-items-center mb-2">
-						<div>
-							<input
-								class="text-center text-l w-full font-bold"
-								type="number"
-								bind:value={dosisBiopest2}
-								min=1
-								max=50
-							/>
-						</div>
-						<input
-							class="w-3/4 h-2 mt-2"
-							type="range"
-							bind:value={dosisBiopest2}
-							min=1
-							max=50
-						/>
-					</div>
-				</label>
-			</div>
-		</div>
-		<!--button enable-->
-		<div class="col-span-2">
-			<input type="checkbox" class="ml-4 mt-1 toggle toggle-primary" bind:checked={jadwal2Enable} />
-		</div>
-		<!-- hari-->
-		<div class="col-span-8 text-xs">
-			<div class="grid grid-cols-7 gap-4 mb-2 ml-1 justify-items-center">
-				{#each hari as hariNow, idx}
-					<label class="text-xs font-bold">
-						<div><small>{hariNow}</small></div>
-						<input
-							type="checkbox"
-							bind:group={cekHari2[idx]}
-							on:change={() => pilihanHari2Click(idx)}
-						/>
-					</label>
-				{/each}
-			</div>
-		</div>
-
-		<div class="col-span-2"></div>
-
-		<div class="col-span-8 text-xs border mb-2 px-2">
-			<div class="grid grid-cols-4 gap-4 p-2 justify-items-center">
-				{#each lahan as lahanNow, idx}
-					<label>
-						<input
-							type="checkbox"
-							bind:checked={cekLahan2[idx]}
-							on:change={() => lahan2Click(idx)}
-						/>
-						<small>{lahanNow}</small>
-					</label>
-				{/each}
-			</div>
-		</div>
-	</div>
-
-	<!-- jadwal 3-->
-	<div
-		class="grid grid-cols-10 gap-2 mt-4 justify-items-center border rounded-lg border-1 shadow-xl"
-	>
-		<!--waktu dan dosis-->
-		<div class="col-span-10 h-20 mt-2">
-			<div class="grid grid-cols-3 gap-2 px-2 justify-items-center">
-				<div class="border rounded border-emerald-950">
-					<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
-						Waktu
-					</div>
-					<SveltyPicker
-						bind:value={waktuSemprot3}
-						inputClasses="w-3/4 font-bold text-lg text-center mx-4"
-						placeholder="06:30"
-						format="hh:ii"
-						displayFormat="hh:ii "
+				</div>
+				<!--button enable-->
+				<div class="col-span-2">
+					<input
+						type="checkbox"
+						class="ml-4 mt-1 toggle toggle-primary"
+						bind:checked={jadwal3Enable}
 					/>
 				</div>
-				<label class=" border rounded border-emerald-950">
-					<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
-						Air(liter)
+				<!-- hari-->
+				<div class="col-span-8 text-xs">
+					<div class="grid grid-cols-7 gap-4 mb-2 ml-1 justify-items-center">
+						{#each hari as hariNow, idx}
+							<label class="text-xs font-bold">
+								<div><small>{hariNow}</small></div>
+								<input
+									type="checkbox"
+									bind:checked={cekHari3[idx]}
+									on:change={() => pilihanHari3Click(idx)}
+								/>
+							</label>
+						{/each}
 					</div>
-					<div class="grid justify-items-center mb-2">
-						<div>
-							<input
-								class="text-center text-l w-full font-bold"
-								type="number"
-								bind:value={dosisAirBiopest3}
-								min=1
-								max=20
-							/>
-						</div>
-						<input
-							class="w-3/4 h-2 mt-2"
-							type="range"
-							bind:value={dosisAirBiopest3}
-							min=1
-							max=20
-						/>
-					</div>
-				</label>
-				<label class=" border rounded border-emerald-950">
-					<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
-						Biopestisida(mL)
-					</div>
-					<div class="grid justify-items-center mb-2">
-						<div>
-							<input
-								class="text-center text-l w-full font-bold"
-								type="number"
-								bind:value={dosisBiopest3}
-								min=1
-								max=50
-							/>
-						</div>
-						<input
-							class="w-3/4 h-2 mt-2"
-							type="range"
-							bind:value={dosisBiopest3}
-							min=1
-							max=50
-						/>
-					</div>
-				</label>
-			</div>
-		</div>
-		<!--button enable-->
-		<div class="col-span-2">
-			<input type="checkbox" class="ml-4 mt-1 toggle toggle-primary" bind:checked={jadwal3Enable} />
-		</div>
-		<!-- hari-->
-		<div class="col-span-8 text-xs">
-			<div class="grid grid-cols-7 gap-4 mb-2 ml-1 justify-items-center">
-				{#each hari as hariNow, idx}
-					<label class="text-xs font-bold">
-						<div><small>{hariNow}</small></div>
-						<input
-							type="checkbox"
-							bind:group={cekHari3[idx]}
-							on:change={() => pilihanHari3Click(idx)}
-						/>
-					</label>
-				{/each}
-			</div>
-		</div>
+				</div>
 
-		<div class="col-span-2"></div>
+				<div class="col-span-2"></div>
 
-		<div class="col-span-8 text-xs border mb-2 px-2">
-			<div class="grid grid-cols-4 gap-4 p-2 justify-items-center">
-				{#each lahan as lahanNow, idx}
-					<label>
-						<input
-							type="checkbox"
-							bind:checked={cekLahan3[idx]}
-							on:change={() => lahan3Click(idx)}
-						/>
-						<small>{lahanNow}</small>
-					</label>
-				{/each}
+				<div class="col-span-8 text-xs border mb-2 px-2">
+					<div class="grid grid-cols-4 gap-4 p-2 justify-items-center">
+						{#each lahan as lahanNow, idx}
+							<label>
+								<input
+									type="checkbox"
+									bind:checked={cekLahan3[idx]}
+									on:change={() => lahan3Click(idx)}
+								/>
+								<small>{lahanNow}</small>
+							</label>
+						{/each}
+					</div>
+				</div>
 			</div>
-		</div>
-	</div>
+		{/if}
 
-	<!---->
-	<div class="grid justify-items-center">
-		<button
-			on:click={() => simpanJadwalBiopest()}
-			class="w-1/2 h-12 border rounded-lg bg-green-900 text-white mt-4 mb-4">Simpan Jadwal</button
-		>
-	</div>
+		<!---->
+		{#if showjadwal !== 0}
+			<div class="grid justify-items-center">
+				<button
+					on:click={() => {
+						showModal = false;
+						simpanJadwalBiopest();
+					}}
+					class="w-1/2 h-12 border rounded-lg bg-green-900 text-white mt-4 mb-4"
+					>Simpan Jadwal</button
+				>
+			</div>
+		{/if}
+	{:else if showMode === 2}
+		<div></div>
+	{:else if showMode === 3}
+		<!-- alert-->
+		<h3 class="text-xl font-bold text-center text-red-500">!!! Perhatian !!!</h3>
+		<hr />
+		{#if $runMode === 1}
+			<div>Sedang Penyiraman</div>
+		{:else if $runMode === 2}
+			<div>Sedang Penyemprotan Pestisida</div>
+		{:else if $runMode === 3}
+			<div>Sedang Penyemproten Biopest</div>
+		{/if}
+	{:else if showMode === 4}
+		<div>
+			<h3 class="text-xl font-bold text-center text-red-500">!!! Perhatian !!!</h3>
+			<hr />
+			<div class="text-center w-full">Fungsi ini tidak berjalan di mode Demo</div>
+		</div>
+	{/if}
 </Modal>
 
 <style>

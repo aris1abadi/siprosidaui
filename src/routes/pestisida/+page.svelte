@@ -13,13 +13,16 @@
 		firtLoad,
 		jadwalPestisida,
 		newJadwalPestisida,
-		volumeAir
+		volumeAir,
+		runMode,
+		resetAllValue,
+		demoMode
 	} from '$lib/store/stores';
 	import Modal from '$lib/Modal.svelte';
 	import SveltyPicker from 'svelty-picker';
 
 	let showjadwal = 0;
-
+	let showMode = 0;
 	let dosisAirPestisida1 = 1;
 	let dosisPestisida1 = 1;
 	let dosisAirPestisida2 = 1;
@@ -34,7 +37,7 @@
 	let waktuSemprot2 = '06:00';
 	let waktuSemprot3 = '06:00';
 
-	let hari = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+	let hari = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 	let lahan = ['Lahan 1', 'Lahan 2', 'Lahan 3', 'Lahan 4'];
 	let pilihanHari1 = [0, 0, 0, 0, 0, 0, 0];
 	let pilihanHari2 = [0, 0, 0, 0, 0, 0, 0];
@@ -53,92 +56,125 @@
 	let showModal = false;
 
 	onMount(() => {
+		resetAllValue();
 		if ($firtLoad) {
 			goto('/');
 		}
-		if($newJadwalPestisida){
+		//if($newJadwalPestisida){
+		if ($jadwalPestisida.length === 120) {
+			console.log('jadwal len: ' + $jadwalPestisida.length);
 			loadJadwal();
-			newJadwalPestisida.set(false);
 		}
+		getAllStatus();
+		showjadwal = 0;
+		//	newJadwalPestisida.set(false);
+		//}
 	});
+
+	function getAllStatus() {
+		kirimMsg('kontrol', 0, 'getAllStatus', '0');
+	}
 
 	function semprotPestisida(lahan) {
 		let msg = '0';
-		let readySend = false;
-		if (lahan === 0) {
-			if ($pestisida_status) {
-				if (
-					!$lahan1Pestisida_status &&
-					!$lahan2Pestisida_status &&
-					!$lahan3Pestisida_status &&
-					!$lahan4Pestisida_status
-				) {
-					$pestisida_status = false;
-					msg = '0';
-					alert('Pilih lahan yang akan disemprot Pestisida');
-				} else {
+		if ($runMode === 0 || $runMode === 2) {
+			runMode.set(2);
+			if (lahan === 0) {
+				if ($pestisida_status) {
 					msg = '1';
-					readySend = true;
+
+					$lahan1Pestisida_status = true;
+					$lahan2Pestisida_status = true;
+					$lahan3Pestisida_status = true;
+					$lahan4Pestisida_status = true;
+				} else {
+					msg = '0';
+					$lahan1Pestisida_status = false;
+					$lahan2Pestisida_status = false;
+					$lahan3Pestisida_status = false;
+					$lahan4Pestisida_status = false;
 				}
-			} else {
-				readySend = true;
-				msg = '0';
+			} else if (lahan === 1) {
+				if ($lahan1Pestisida_status) {
+					msg = '1';
+					$pestisida_status = true;
+				} else {
+					msg = '0';
+					if (!$lahan2Pestisida_status && !$lahan3Pestisida_status && !$lahan4Pestisida_status) {
+						$pestisida_status = false;
+					}
+				}
+			} else if (lahan === 2) {
+				if ($lahan2Pestisida_status) {
+					msg = '1';
+					$pestisida_status = true;
+				} else {
+					msg = '0';
+					if (!$lahan1Pestisida_status && !$lahan3Pestisida_status && !$lahan4Pestisida_status) {
+						$pestisida_status = false;
+					}
+				}
+			} else if (lahan === 3) {
+				if ($lahan3Pestisida_status) {
+					msg = '1';
+					$pestisida_status = true;
+				} else {
+					msg = '0';
+					if (!$lahan2Pestisida_status && !$lahan1Pestisida_status && !$lahan4Pestisida_status) {
+						$pestisida_status = false;
+					}
+				}
+			} else if (lahan === 4) {
+				if ($lahan4Pestisida_status) {
+					msg = '1';
+					$pestisida_status = true;
+				} else {
+					msg = '0';
+					if (!$lahan2Pestisida_status && !$lahan3Pestisida_status && !$lahan1Pestisida_status) {
+						$pestisida_status = false;
+					}
+				}
+			}
+			//if (readySend) {
+			if (!$demoMode) kirimMsg('pestisida', lahan, 'cmd', msg);
+			else {
+				alertDemo();
 				$lahan1Pestisida_status = false;
 				$lahan2Pestisida_status = false;
 				$lahan3Pestisida_status = false;
 				$lahan4Pestisida_status = false;
+				$pestisida_status = false;
 			}
-		} else if (lahan == 1) {
-			if ($lahan1Pestisida_status) {
-				msg = '1';
-				$pestisida_status = true;
-			} else {
-				msg = '0';
-				if (!$lahan2Pestisida_status && !$lahan3Pestisida_status && !$lahan4Pestisida_status) {
-					$pestisida_status = false;
-				}
-			}
-		} else if (lahan == 2) {
-			if ($lahan2Pestisida_status) {
-				msg = '1';
-				$pestisida_status = true;
-			} else {
-				msg = '0';
-				if (!$lahan1Pestisida_status && !$lahan3Pestisida_status && !$lahan4Pestisida_status) {
-					$pestisida_status = false;
-				}
-			}
-		} else if (lahan == 3) {
-			if ($lahan3Pestisida_status) {
-				msg = '1';
-				$pestisida_status = true;
-			} else {
-				msg = '0';
-				if (!$lahan2Pestisida_status && !$lahan1Pestisida_status && !$lahan4Pestisida_status) {
-					$pestisida_status = false;
-				}
-			}
-		} else if (lahan == 4) {
-			if ($lahan4Pestisida_status) {
-				msg = '1';
-				$pestisida_status = true;
-			} else {
-				msg = '0';
-				if (!$lahan2Pestisida_status && !$lahan3Pestisida_status && !$lahan1Pestisida_status) {
-					$pestisida_status = false;
-				}
-			}
-		}
-		if (readySend) {
-			kirimMsg('pestisida', lahan, 'cmd', msg);
+		} else {
+			//
+			$lahan1Pestisida_status = false;
+			$lahan2Pestisida_status = false;
+			$lahan3Pestisida_status = false;
+			$lahan4Pestisida_status = false;
+			$pestisida_status = false;
+			alertShow($runMode);
 		}
 	}
 
+	function alertDemo() {
+		showModal = true;
+		showMode = 4;
+	}
+
+	function alertShow(val) {
+		showModal = true;
+		showMode = 3;
+	}
+
 	function simpanDosisAirPestisida() {
+		if(!$demoMode){
 		kirimMsg('pestisida', 0, 'dosisAirPestisida', String($dosisAirPestisida));
+		}
 	}
 	function simpanDosisPestisida() {
+		if(!$demoMode){
 		kirimMsg('pestisida', 0, 'dosisPestisida', String($dosisPestisida));
+		}
 	}
 
 	function lahan1Click(idx) {
@@ -277,9 +313,15 @@
 	}
 
 	function simpanJadwalPestisida() {
+		showMode = 1;
+		showjadwal = 0;
+		if($demoMode){
+			alertDemo()
+		}else{
 		let jwl = packingJadwal();
 		kirimMsg('pestisida', 0, 'setJadwal', jwl);
-		console.log(jwl);
+		}
+		//console.log(jwl);
 	}
 
 	function loadJadwal() {
@@ -369,6 +411,7 @@
 
 	function showJadwalPestisida() {
 		showModal = true;
+		showMode = 1;
 		if ($newJadwalPestisida) {
 			loadJadwal();
 			newJadwalPestisida.set(false);
@@ -474,7 +517,7 @@
 							type="checkbox"
 							class="toggle toggle-accent"
 							bind:checked={$lahan1Pestisida_status}
-							on:change={() => pilihLahanPestisida(1)}
+							on:change={() => semprotPestisida(1)}
 						/></label
 					>
 
@@ -484,7 +527,7 @@
 							type="checkbox"
 							class="toggle toggle-accent"
 							bind:checked={$lahan2Pestisida_status}
-							on:change={() => pilihLahanPestisida(2)}
+							on:change={() => semprotPestisida(2)}
 						/></label
 					>
 					<label class="text-xs font-bold text-center"
@@ -493,7 +536,7 @@
 							type="checkbox"
 							class="toggle toggle-accent"
 							bind:checked={$lahan3Pestisida_status}
-							on:change={() => pilihLahanPestisida(3)}
+							on:change={() => semprotPestisida(3)}
 						/></label
 					>
 					<label class="text-xs font-bold text-center"
@@ -502,47 +545,47 @@
 							type="checkbox"
 							class="toggle toggle-accent"
 							bind:checked={$lahan4Pestisida_status}
-							on:change={() => pilihLahanPestisida(4)}
+							on:change={() => semprotPestisida(4)}
 						/></label
 					>
 				</div>
-
-				<div class="grid grid-cols-3 px-6 gap-4 my-4 justify-items-center">
-					<div class="text-center text-xs">Jadwal</div>
+				<!-- kontrol pestisida-->
+				<div class="grid grid-cols-3 w-full h-24 my-4 justify-items-center">
+					<div class="text-sm font-bold text-center"><small>Jadwal</small></div>
 					<div></div>
-					<div class="text-center text-xs">Semprot</div>
+					<div class="text-sm font-bold mb-0"><small>Semprot</small></div>
 					<button
 						on:click={() => showJadwalPestisida()}
-						class="w-3/4 h-16 rounded-xl shadow-lg border"
+						class="w-3/4 h-16 rounded-lg shadow-lg border border-gray-900"
 					>
 						<div class="grid grid-cols-2 gap-1">
 							<div>
 								<div class="text-xs text-black-300">
-									
-									{#if jadwal1Enable}
-									<small>{waktuSemprot1}</small>
-										
-									{:else}
-										--:--
-									{/if}
+									<small>
+										{#if jadwal1Enable}
+											{waktuSemprot1}
+										{:else}
+											--:--
+										{/if}
+									</small>
 								</div>
 								<div class="text-xs text-black-300">
-									
-									{#if jadwal2Enable}
-									<small>{waktuSemprot2}</small>
-										
-									{:else}
-										--:--
-									{/if}
+									<small>
+										{#if jadwal2Enable}
+											{waktuSemprot2}
+										{:else}
+											--:--
+										{/if}
+									</small>
 								</div>
 								<div class="text-xs text-black-300">
-									
-									{#if jadwal3Enable}
-									<small>{waktuSemprot3}</small>
-										
-									{:else}
-										--:--
-									{/if}
+									<small>
+										{#if jadwal3Enable}
+											{waktuSemprot3}
+										{:else}
+											--:--
+										{/if}
+									</small>
 								</div>
 							</div>
 							<div class="grid justify-items-center">
@@ -558,28 +601,31 @@
 						<div class="text-center font-bold text-lg">{$volumeAir} Ltr</div>
 					</div>
 
-					<label class="swap swap-flip h-12 w-12">
+					<label class="swap swap-flip h-16 w-16">
 						<!-- this hidden checkbox controls the state -->
 						<input
 							type="checkbox"
 							bind:checked={$pestisida_status}
 							on:change={() => semprotPestisida(0)}
 						/>
-
 						<div class="swap-on">
-							<img class="ml-2" src=" /btnhijau.jpeg" alt="btn_on" />
+							<img class="ml-1" src=" /btnhijau.jpeg" alt="btn_on" />
 						</div>
 						<div class="swap-off">
-							<img class="ml-2" src=" /btnmerah.jpeg" alt="btn_off" />
+							<img class="ml-1" src=" /btnmerah.jpeg" alt="btn_off" />
 						</div>
 					</label>
 				</div>
 			</div>
 			<div></div>
 		</div>
-		<div class="grid justify-items-start">
-			<button class="h-8 w-8 ml-8 mt-24" on:click={() => goto('/home')}>
-				<img src=" /btn_home2.png" alt="btn_home" />
+		<div class="grid grid-cols-5 w-full h-12 justify-items-center mt-16">
+			<button on:click={() => goto('/')}>
+				<img class="h-8 w-8" src="/logout.png" alt="btn_out" />
+			</button>
+			<div class="col-span-3"></div>
+			<button on:click={() => goto('/home')}>
+				<img class="h-8 w-8" src="/btn_home2.png" alt="btn_home" />
 			</button>
 		</div>
 	</div>
@@ -587,368 +633,403 @@
 
 <!--Jadwal-->
 <Modal bind:showModal>
-	<h2 slot="header" class="text-xl font-bold text-center">Jadwal Pestisida</h2>
+	{#if showMode === 1}
+		<h3 class="text-xl font-bold text-center">Jadwal Pestisida</h3>
+		<hr />
 
-	<div class="grid grid-cols-3 gap-4 w-full my-4">
-		<button
-			class={jadwal1Enable
-				? 'border rounded h-12 font-bold bg-green-700 text-white'
-				: 'border rounded h-12 font-bold bg-green-100 text-black'}
-			on:click={() => (showjadwal = 1)}
-			><div class="text-xs"><small>Jadwal1</small></div>
-			{waktuSemprot1}
-		</button>
-		<button
-			class={jadwal2Enable
-				? 'border rounded h-12 font-bold bg-green-700 text-white'
-				: 'border rounded h-12 font-bold bg-green-100 text-black'}
-			on:click={() => (showjadwal = 2)}
-			><div class="text-xs"><small>Jadwal2</small></div>
-			{waktuSemprot2}
-		</button>
-		<button
-			class={jadwal3Enable
-				? 'border rounded h-12 font-bold bg-green-700 text-white'
-				: 'border rounded h-12 font-bold bg-green-100 text-black'}
-			on:click={() => (showjadwal = 3)}
-			><div class="text-xs"><small>Jadwal3</small></div>
-			{waktuSemprot3}
-		</button>
-	</div>
-	<!-- jadwal 1-->
-	{#if showjadwal === 1}
-		<div
-			class="grid grid-cols-10 gap-2 mt-4 justify-items-center border rounded-lg border-1 shadow-xl"
-		>
-			<!--waktu dan dosis-->
-			<div class="col-span-10 h-20 mt-2">
-				<div class="grid grid-cols-3 gap-2 px-2 justify-items-center">
-					<div class="border rounded border-emerald-950">
-						<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
-							Waktu
+		<div class="grid grid-cols-3 gap-4 w-full my-4">
+			<button
+				class={jadwal1Enable
+					? 'border rounded h-12 font-bold bg-green-700 text-white'
+					: 'border rounded h-12 font-bold bg-green-100 text-black'}
+				on:click={() => (showjadwal = 1)}
+				><div class="text-xs"><small>Jadwal1</small></div>
+				{waktuSemprot1}
+			</button>
+			<button
+				class={jadwal2Enable
+					? 'border rounded h-12 font-bold bg-green-700 text-white'
+					: 'border rounded h-12 font-bold bg-green-100 text-black'}
+				on:click={() => (showjadwal = 2)}
+				><div class="text-xs"><small>Jadwal2</small></div>
+				{waktuSemprot2}
+			</button>
+			<button
+				class={jadwal3Enable
+					? 'border rounded h-12 font-bold bg-green-700 text-white'
+					: 'border rounded h-12 font-bold bg-green-100 text-black'}
+				on:click={() => (showjadwal = 3)}
+				><div class="text-xs"><small>Jadwal3</small></div>
+				{waktuSemprot3}
+			</button>
+		</div>
+		<!-- jadwal 1-->
+		{#if showjadwal === 1}
+			<div
+				class="grid grid-cols-10 gap-2 mt-4 justify-items-center border rounded-lg border-1 shadow-xl"
+			>
+				<div class=" col-span-10 text-center">Jadwal 1</div>
+				<!--waktu dan dosis-->
+				<div class="col-span-10 h-20 mt-2">
+					<div class="grid grid-cols-3 gap-2 px-2 justify-items-center">
+						<div class="border rounded border-emerald-950">
+							<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
+								Waktu
+							</div>
+							<SveltyPicker
+								bind:value={waktuSemprot1}
+								inputClasses="w-3/4 font-bold text-lg text-center mx-4"
+								placeholder="06:30"
+								format="hh:ii"
+								displayFormat="hh:ii "
+							/>
 						</div>
-						<SveltyPicker
-							bind:value={waktuSemprot1}
-							inputClasses="w-3/4 font-bold text-lg text-center mx-4"
-							placeholder="06:30"
-							format="hh:ii"
-							displayFormat="hh:ii "
-						/>
-					</div>
-					<label class=" border rounded border-emerald-950">
-						<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
-							Air(liter)
-						</div>
-						<div class="grid justify-items-center mb-2">
-							<div>
+						<label class=" border rounded border-emerald-950">
+							<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
+								Air(liter)
+							</div>
+							<div class="grid justify-items-center mb-2">
+								<div>
+									<input
+										class="text-center text-l w-full font-bold"
+										type="number"
+										bind:value={dosisAirPestisida1}
+										min="1"
+										max="20"
+									/>
+								</div>
 								<input
-									class="text-center text-l w-full font-bold"
-									type="number"
+									class="w-3/4 h-2 mt-2"
+									type="range"
 									bind:value={dosisAirPestisida1}
 									min="1"
 									max="20"
 								/>
 							</div>
-							<input
-								class="w-3/4 h-2 mt-2"
-								type="range"
-								bind:value={dosisAirPestisida1}
-								min="1"
-								max="20"
-							/>
-						</div>
-					</label>
-					<label class=" border rounded border-emerald-950">
-						<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
-							Pestisida(mL)
-						</div>
-						<div class="grid justify-items-center mb-2">
-							<div>
+						</label>
+						<label class=" border rounded border-emerald-950">
+							<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
+								Pestisida(mL)
+							</div>
+							<div class="grid justify-items-center mb-2">
+								<div>
+									<input
+										class="text-center text-l w-full font-bold"
+										type="number"
+										bind:value={dosisPestisida1}
+										min="1"
+										max="50"
+									/>
+								</div>
 								<input
-									class="text-center text-l w-full font-bold"
-									type="number"
+									class="w-3/4 h-2 mt-2"
+									type="range"
 									bind:value={dosisPestisida1}
 									min="1"
 									max="50"
 								/>
 							</div>
-							<input
-								class="w-3/4 h-2 mt-2"
-								type="range"
-								bind:value={dosisPestisida1}
-								min="1"
-								max="50"
-							/>
-						</div>
-					</label>
-				</div>
-			</div>
-			<!--button enable-->
-			<div class="col-span-2">
-				<input
-					type="checkbox"
-					class="ml-4 mt-1 toggle toggle-primary"
-					bind:checked={jadwal1Enable}
-				/>
-			</div>
-			<!-- hari-->
-			<div class="col-span-8 text-xs">
-				<div class="grid grid-cols-7 gap-4 mb-2 ml-1 justify-items-center">
-					{#each hari as hariNow, idx}
-						<label class="text-xs font-bold">
-							<div><small>{hariNow}</small></div>
-							<input
-								type="checkbox"
-								bind:group={cekHari1[idx]}
-								on:change={() => pilihanHari1Click(idx)}
-							/>
 						</label>
-					{/each}
-				</div>
-			</div>
-
-			<div class="col-span-2"></div>
-
-			<div class="col-span-8 text-xs border mb-2 px-2">
-				<div class="grid grid-cols-4 gap-4 p-2 justify-items-center">
-					{#each lahan as lahanNow, idx}
-						<label>
-							<input
-								type="checkbox"
-								bind:checked={cekLahan1[idx]}
-								on:change={() => lahan1Click(idx)}
-							/>
-							<small>{lahanNow}</small>
-						</label>
-					{/each}
-				</div>
-			</div>
-		</div>
-	
-
-	<!-- jadwal 2-->
-	{:else if showjadwal === 2}
-	<div
-		class="grid grid-cols-10 gap-2 mt-4 justify-items-center border rounded-lg border-1 shadow-xl"
-	>
-		<!--waktu dan dosis-->
-		<div class="col-span-10 h-20 mt-2">
-			<div class="grid grid-cols-3 gap-2 px-2 justify-items-center">
-				<div class="border rounded border-emerald-950">
-					<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
-						Waktu
 					</div>
-					<SveltyPicker
-						bind:value={waktuSemprot2}
-						inputClasses="w-3/4 font-bold text-lg text-center mx-4"
-						placeholder="06:30"
-						format="hh:ii"
-						displayFormat="hh:ii "
+				</div>
+				<!--button enable-->
+				<div class="col-span-2">
+					<input
+						type="checkbox"
+						class="ml-4 mt-1 toggle toggle-primary"
+						bind:checked={jadwal1Enable}
 					/>
 				</div>
-				<label class=" border rounded border-emerald-950">
-					<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
-						Air(liter)
+				<!-- hari-->
+				<div class="col-span-8 text-xs">
+					<div class="grid grid-cols-7 gap-4 mb-2 ml-1 justify-items-center">
+						{#each hari as hariNow, idx}
+							<label class="text-xs font-bold">
+								<div><small>{hariNow}</small></div>
+								<input
+									type="checkbox"
+									bind:checked={cekHari1[idx]}
+									on:change={() => pilihanHari1Click(idx)}
+								/>
+							</label>
+						{/each}
 					</div>
-					<div class="grid justify-items-center mb-2">
-						<div>
-							<input
-								class="text-center text-l w-full font-bold"
-								type="number"
-								bind:value={dosisAirPestisida2}
-								min="1"
-								max="20"
+				</div>
+
+				<div class="col-span-2"></div>
+
+				<div class="col-span-8 text-xs border mb-2 px-2">
+					<div class="grid grid-cols-4 gap-4 p-2 justify-items-center">
+						{#each lahan as lahanNow, idx}
+							<label>
+								<input
+									type="checkbox"
+									bind:checked={cekLahan1[idx]}
+									on:change={() => lahan1Click(idx)}
+								/>
+								<small>{lahanNow}</small>
+							</label>
+						{/each}
+					</div>
+				</div>
+			</div>
+
+			<!-- jadwal 2-->
+		{:else if showjadwal === 2}
+			<div
+				class="grid grid-cols-10 gap-2 mt-4 justify-items-center border rounded-lg border-1 shadow-xl"
+			>
+				<div class=" col-span-10 text-center">Jadwal 2</div>
+				<!--waktu dan dosis-->
+				<div class="col-span-10 h-20 mt-2">
+					<div class="grid grid-cols-3 gap-2 px-2 justify-items-center">
+						<div class="border rounded border-emerald-950">
+							<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
+								Waktu
+							</div>
+							<SveltyPicker
+								bind:value={waktuSemprot2}
+								inputClasses="w-3/4 font-bold text-lg text-center mx-4"
+								placeholder="06:30"
+								format="hh:ii"
+								displayFormat="hh:ii "
 							/>
 						</div>
-						<input
-							class="w-3/4 h-2 mt-2"
-							type="range"
-							bind:value={dosisAirPestisida2}
-							min="1"
-							max="20"
-						/>
+						<label class=" border rounded border-emerald-950">
+							<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
+								Air(liter)
+							</div>
+							<div class="grid justify-items-center mb-2">
+								<div>
+									<input
+										class="text-center text-l w-full font-bold"
+										type="number"
+										bind:value={dosisAirPestisida2}
+										min="1"
+										max="20"
+									/>
+								</div>
+								<input
+									class="w-3/4 h-2 mt-2"
+									type="range"
+									bind:value={dosisAirPestisida2}
+									min="1"
+									max="20"
+								/>
+							</div>
+						</label>
+						<label class=" border rounded border-emerald-950">
+							<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
+								Pestisida(mL)
+							</div>
+							<div class="grid justify-items-center mb-2">
+								<div>
+									<input
+										class="text-center text-l w-full font-bold"
+										type="number"
+										bind:value={dosisPestisida2}
+										min="1"
+										max="50"
+									/>
+								</div>
+								<input
+									class="w-3/4 h-2 mt-2"
+									type="range"
+									bind:value={dosisPestisida2}
+									min="1"
+									max="50"
+								/>
+							</div>
+						</label>
 					</div>
-				</label>
-				<label class=" border rounded border-emerald-950">
-					<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
-						Pestisida(mL)
-					</div>
-					<div class="grid justify-items-center mb-2">
-						<div>
-							<input
-								class="text-center text-l w-full font-bold"
-								type="number"
-								bind:value={dosisPestisida2}
-								min="1"
-								max="50"
-							/>
-						</div>
-						<input
-							class="w-3/4 h-2 mt-2"
-							type="range"
-							bind:value={dosisPestisida2}
-							min="1"
-							max="50"
-						/>
-					</div>
-				</label>
-			</div>
-		</div>
-		<!--button enable-->
-		<div class="col-span-2">
-			<input type="checkbox" class="ml-4 mt-1 toggle toggle-primary" bind:checked={jadwal2Enable} />
-		</div>
-		<!-- hari-->
-		<div class="col-span-8 text-xs">
-			<div class="grid grid-cols-7 gap-4 mb-2 ml-1 justify-items-center">
-				{#each hari as hariNow, idx}
-					<label class="text-xs font-bold">
-						<div><small>{hariNow}</small></div>
-						<input
-							type="checkbox"
-							bind:group={cekHari2[idx]}
-							on:change={() => pilihanHari2Click(idx)}
-						/>
-					</label>
-				{/each}
-			</div>
-		</div>
-
-		<div class="col-span-2"></div>
-
-		<div class="col-span-8 text-xs border mb-2 px-2">
-			<div class="grid grid-cols-4 gap-4 p-2 justify-items-center">
-				{#each lahan as lahanNow, idx}
-					<label>
-						<input
-							type="checkbox"
-							bind:checked={cekLahan2[idx]}
-							on:change={() => lahan2Click(idx)}
-						/>
-						<small>{lahanNow}</small>
-					</label>
-				{/each}
-			</div>
-		</div>
-	</div>
-
-	<!-- jadwal 3-->
-	{:else if showjadwal === 3}
-	<div
-		class="grid grid-cols-10 gap-2 mt-4 justify-items-center border rounded-lg border-1 shadow-xl"
-	>
-		<!--waktu dan dosis-->
-		<div class="col-span-10 h-20 mt-2">
-			<div class="grid grid-cols-3 gap-2 px-2 justify-items-center">
-				<div class="border rounded border-emerald-950">
-					<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
-						Waktu
-					</div>
-					<SveltyPicker
-						bind:value={waktuSemprot3}
-						inputClasses="w-3/4 font-bold text-lg text-center mx-4"
-						placeholder="06:30"
-						format="hh:ii"
-						displayFormat="hh:ii "
+				</div>
+				<!--button enable-->
+				<div class="col-span-2">
+					<input
+						type="checkbox"
+						class="ml-4 mt-1 toggle toggle-primary"
+						bind:checked={jadwal2Enable}
 					/>
 				</div>
-				<label class=" border rounded border-emerald-950">
-					<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
-						Air(liter)
+				<!-- hari-->
+				<div class="col-span-8 text-xs">
+					<div class="grid grid-cols-7 gap-4 mb-2 ml-1 justify-items-center">
+						{#each hari as hariNow, idx}
+							<label class="text-xs font-bold">
+								<div><small>{hariNow}</small></div>
+								<input
+									type="checkbox"
+									bind:checked={cekHari2[idx]}
+									on:change={() => pilihanHari2Click(idx)}
+								/>
+							</label>
+						{/each}
 					</div>
-					<div class="grid justify-items-center mb-2">
-						<div>
-							<input
-								class="text-center text-l w-full font-bold"
-								type="number"
-								bind:value={dosisAirPestisida3}
-								min="1"
-								max="20"
+				</div>
+
+				<div class="col-span-2"></div>
+
+				<div class="col-span-8 text-xs border mb-2 px-2">
+					<div class="grid grid-cols-4 gap-4 p-2 justify-items-center">
+						{#each lahan as lahanNow, idx}
+							<label>
+								<input
+									type="checkbox"
+									bind:checked={cekLahan2[idx]}
+									on:change={() => lahan2Click(idx)}
+								/>
+								<small>{lahanNow}</small>
+							</label>
+						{/each}
+					</div>
+				</div>
+			</div>
+
+			<!-- jadwal 3-->
+		{:else if showjadwal === 3}
+			<div
+				class="grid grid-cols-10 gap-2 mt-4 justify-items-center border rounded-lg border-1 shadow-xl"
+			>
+				<div class=" col-span-10 text-center">Jadwal 3</div>
+				<!--waktu dan dosis-->
+				<div class="col-span-10 h-20 mt-2">
+					<div class="grid grid-cols-3 gap-2 px-2 justify-items-center">
+						<div class="border rounded border-emerald-950">
+							<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
+								Waktu
+							</div>
+							<SveltyPicker
+								bind:value={waktuSemprot3}
+								inputClasses="w-3/4 font-bold text-lg text-center mx-4"
+								placeholder="06:30"
+								format="hh:ii"
+								displayFormat="hh:ii "
 							/>
 						</div>
-						<input
-							class="w-3/4 h-2 mt-2"
-							type="range"
-							bind:value={dosisAirPestisida3}
-							min="1"
-							max="20"
-						/>
+						<label class=" border rounded border-emerald-950">
+							<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
+								Air(liter)
+							</div>
+							<div class="grid justify-items-center mb-2">
+								<div>
+									<input
+										class="text-center text-l w-full font-bold"
+										type="number"
+										bind:value={dosisAirPestisida3}
+										min="1"
+										max="20"
+									/>
+								</div>
+								<input
+									class="w-3/4 h-2 mt-2"
+									type="range"
+									bind:value={dosisAirPestisida3}
+									min="1"
+									max="20"
+								/>
+							</div>
+						</label>
+						<label class=" border rounded border-emerald-950">
+							<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
+								Pestisida(mL)
+							</div>
+							<div class="grid justify-items-center mb-2">
+								<div>
+									<input
+										class="text-center text-l w-full font-bold"
+										type="number"
+										bind:value={dosisPestisida3}
+										min="1"
+										max="50"
+									/>
+								</div>
+								<input
+									class="w-3/4 h-2 mt-2"
+									type="range"
+									bind:value={dosisPestisida3}
+									min="1"
+									max="50"
+								/>
+							</div>
+						</label>
 					</div>
-				</label>
-				<label class=" border rounded border-emerald-950">
-					<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
-						Pestisida(mL)
+				</div>
+				<!--button enable-->
+				<div class="col-span-2">
+					<input
+						type="checkbox"
+						class="ml-4 mt-1 toggle toggle-primary"
+						bind:checked={jadwal3Enable}
+					/>
+				</div>
+				<!-- hari-->
+				<div class="col-span-8 text-xs">
+					<div class="grid grid-cols-7 gap-4 mb-2 ml-1 justify-items-center">
+						{#each hari as hariNow, idx}
+							<label class="text-xs font-bold">
+								<div><small>{hariNow}</small></div>
+								<input
+									type="checkbox"
+									bind:checked={cekHari3[idx]}
+									on:change={() => pilihanHari3Click(idx)}
+								/>
+							</label>
+						{/each}
 					</div>
-					<div class="grid justify-items-center mb-2">
-						<div>
-							<input
-								class="text-center text-l w-full font-bold"
-								type="number"
-								bind:value={dosisPestisida3}
-								min="1"
-								max="50"
-							/>
-						</div>
-						<input
-							class="w-3/4 h-2 mt-2"
-							type="range"
-							bind:value={dosisPestisida3}
-							min="1"
-							max="50"
-						/>
-					</div>
-				</label>
-			</div>
-		</div>
-		<!--button enable-->
-		<div class="col-span-2">
-			<input type="checkbox" class="ml-4 mt-1 toggle toggle-primary" bind:checked={jadwal3Enable} />
-		</div>
-		<!-- hari-->
-		<div class="col-span-8 text-xs">
-			<div class="grid grid-cols-7 gap-4 mb-2 ml-1 justify-items-center">
-				{#each hari as hariNow, idx}
-					<label class="text-xs font-bold">
-						<div><small>{hariNow}</small></div>
-						<input
-							type="checkbox"
-							bind:group={cekHari3[idx]}
-							on:change={() => pilihanHari3Click(idx)}
-						/>
-					</label>
-				{/each}
-			</div>
-		</div>
+				</div>
 
-		<div class="col-span-2"></div>
+				<div class="col-span-2"></div>
 
-		<div class="col-span-8 text-xs border mb-2 px-2">
-			<div class="grid grid-cols-4 gap-4 p-2 justify-items-center">
-				{#each lahan as lahanNow, idx}
-					<label>
-						<input
-							type="checkbox"
-							bind:checked={cekLahan3[idx]}
-							on:change={() => lahan3Click(idx)}
-						/>
-						<small>{lahanNow}</small>
-					</label>
-				{/each}
+				<div class="col-span-8 text-xs border mb-2 px-2">
+					<div class="grid grid-cols-4 gap-4 p-2 justify-items-center">
+						{#each lahan as lahanNow, idx}
+							<label>
+								<input
+									type="checkbox"
+									bind:checked={cekLahan3[idx]}
+									on:change={() => lahan3Click(idx)}
+								/>
+								<small>{lahanNow}</small>
+							</label>
+						{/each}
+					</div>
+				</div>
 			</div>
+		{/if}
+
+		<!---->
+		{#if showjadwal !== 0}
+			<div class="grid justify-items-center">
+				<button
+					on:click={() => {
+						showModal = false;
+						simpanJadwalPestisida();
+					}}
+					class="w-1/2 h-12 border rounded-lg bg-green-900 text-white mt-4 mb-4"
+					>Simpan Jadwal</button
+				>
+			</div>
+		{/if}
+	{:else if showMode === 2}
+		<div></div>
+	{:else if showMode === 3}
+		<!-- alert-->
+		<h3 class="text-xl font-bold text-center text-red-500">!!! Perhatian !!!</h3>
+		<hr />
+		{#if $runMode === 1}
+			<div>Sedang Penyiraman</div>
+		{:else if $runMode === 2}
+			<div>Sedang Penyemprotan Pestisida</div>
+		{:else if $runMode === 3}
+			<div>Sedang Penyemproten Biopest</div>
+		{/if}
+	{:else if showMode === 4}
+		<div>
+			<h3 class="text-xl font-bold text-center text-red-500">!!! Perhatian !!!</h3>
+			<hr />
+			<div class="text-center w-full">Fungsi ini tidak berjalan di mode Demo</div>
 		</div>
-	</div>
 	{/if}
-
-	<!---->
-	<div class="grid justify-items-center">
-		<button
-			on:click={() => {
-				showModal = false;
-				simpanJadwalPestisida();
-			}}
-			class="w-1/2 h-12 border rounded-lg bg-green-900 text-white mt-4 mb-4">Simpan Jadwal</button
-		>
-	</div>
 </Modal>
 
 <style>
