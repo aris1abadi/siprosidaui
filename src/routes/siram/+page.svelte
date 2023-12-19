@@ -33,9 +33,9 @@
 	let jadwal1Enable = false;
 	let jadwal2Enable = false;
 	let jadwal3Enable = false;
-	let durasiSiram1 = '5';
-	let durasiSiram2 = '5';
-	let durasiSiram3 = '5';
+	let durasiSiram1 = 5;
+	let durasiSiram2 = 5;
+	let durasiSiram3 = 5;
 	let waktuSiram1 = '06:00';
 	let waktuSiram2 = '06:00';
 	let waktuSiram3 = '06:00';
@@ -264,7 +264,7 @@
 			jw += ',';
 		}
 		jw += '0,0,';
-		jw += durasiSiram1;
+		jw += String(durasiSiram1);
 		jw += ';';
 
 		//jadwal 2
@@ -289,7 +289,7 @@
 			jw += ',';
 		}
 		jw += '0,0,';
-		jw += durasiSiram2;
+		jw += String(durasiSiram2);
 		jw += ';';
 
 		//jadwal 3
@@ -314,7 +314,7 @@
 			jw += ',';
 		}
 		jw += '0,0,';
-		jw += durasiSiram3;
+		jw += String(durasiSiram3);
 		jw += ';';
 
 		return jw;
@@ -361,7 +361,7 @@
 				cekLahan1[i] = false;
 			}
 		}
-		durasiSiram1 = jadwal1[18];
+		durasiSiram1 = parseInt(jadwal1[18]);
 		//jadwal2
 		let jadwal2 = jadwal123[1].split(',');
 		if (jadwal2[0] === '1') {
@@ -385,7 +385,7 @@
 				cekLahan2[i] = false;
 			}
 		}
-		durasiSiram2 = jadwal1[18];
+		durasiSiram2 = parseInt(jadwal1[18]);
 		//jadwal3
 		let jadwal3 = jadwal123[2].split(',');
 		if (jadwal3[0] === '1') {
@@ -409,7 +409,7 @@
 				cekLahan3[i] = false;
 			}
 		}
-		durasiSiram3 = jadwal1[18];
+		durasiSiram3 = parseInt(jadwal1[18]);
 		waktuSiram1 = waktuSiram1;
 		waktuSiram2 = waktuSiram2;
 		waktuSiram3 = waktuSiram3;
@@ -695,11 +695,11 @@
 							<div class="grid grid-cols-2">
 								<input
 									class="text-center text-2xl font-bold bg-lime-100"
-									type="text"
-									placeholder={durasiSiram1}
+									type="number"
+									placeholder={String(durasiSiram1)}
 									bind:value={durasiSiram1}
-									min="1"
-									max="60"
+									min=1
+									max=60
 								/>
 								<div class="text-xs">mnt</div>
 							</div>
@@ -768,11 +768,11 @@
 							<div class="grid grid-cols-2">
 								<input
 									class="text-center text-2xl font-bold bg-lime-100"
-									type="text"
-									placeholder={durasiSiram2}
+									type="number"
+									placeholder={String(durasiSiram2)}
 									bind:value={durasiSiram2}
-									min="1"
-									max="60"
+									min=1
+									max=60
 								/>
 								<div class="text-xs">mnt</div>
 							</div>
@@ -841,11 +841,11 @@
 							<div class="grid grid-cols-2">
 								<input
 									class="text-center text-2xl font-bold bg-lime-100"
-									type="text"
-									placeholder={durasiSiram3}
+									type="number"
+									placeholder={String(durasiSiram3)}
 									bind:value={durasiSiram3}
-									min="1"
-									max="60"
+									min=1
+									max=60
 								/>
 								<div class="text-xs">mnt</div>
 							</div>
