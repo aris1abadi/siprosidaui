@@ -137,7 +137,7 @@
 				}
 			}
 
-			console.log('siram lahan ' + lahan + '=> ' + lahanSts + '(1=ON,0=OFF)');
+			//console.log('siram lahan ' + lahan + '=> ' + lahanSts + '(1=ON,0=OFF)');
 			if (!$demoMode) {
 				kirimMsg('siram', lahan, 'cmd', lahanSts);
 			} else {

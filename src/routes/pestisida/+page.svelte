@@ -100,9 +100,7 @@
 					$pestisida_status = true;
 				} else {
 					msg = '0';
-					if (!$lahan2Pestisida_status && !$lahan3Pestisida_status && !$lahan4Pestisida_status) {
-						$pestisida_status = false;
-					}
+					
 				}
 			} else if (lahan === 2) {
 				if ($lahan2Pestisida_status) {
@@ -110,9 +108,7 @@
 					$pestisida_status = true;
 				} else {
 					msg = '0';
-					if (!$lahan1Pestisida_status && !$lahan3Pestisida_status && !$lahan4Pestisida_status) {
-						$pestisida_status = false;
-					}
+					
 				}
 			} else if (lahan === 3) {
 				if ($lahan3Pestisida_status) {
@@ -120,9 +116,7 @@
 					$pestisida_status = true;
 				} else {
 					msg = '0';
-					if (!$lahan2Pestisida_status && !$lahan1Pestisida_status && !$lahan4Pestisida_status) {
-						$pestisida_status = false;
-					}
+					
 				}
 			} else if (lahan === 4) {
 				if ($lahan4Pestisida_status) {
@@ -130,9 +124,7 @@
 					$pestisida_status = true;
 				} else {
 					msg = '0';
-					if (!$lahan2Pestisida_status && !$lahan3Pestisida_status && !$lahan1Pestisida_status) {
-						$pestisida_status = false;
-					}
+					
 				}
 			}
 			//if (readySend) {
@@ -467,8 +459,8 @@
 									type="number"
 									bind:value={$dosisAirPestisida}
 									on:change={() => simpanDosisAirPestisida()}
-									min="1"
-									max="20"
+									min=1
+									max=20
 								/>
 								<span class="text-xs">Liter</span>
 							</div>
@@ -477,8 +469,8 @@
 								type="range"
 								bind:value={$dosisAirPestisida}
 								on:change={() => simpanDosisAirPestisida()}
-								min="1"
-								max="20"
+								min=1
+								max=20
 							/>
 						</div>
 					</label>
@@ -493,8 +485,8 @@
 									type="number"
 									bind:value={$dosisPestisida}
 									on:change={() => simpanDosisPestisida()}
-									min="1"
-									max="50"
+									min=1
+									max=50
 								/>
 								<span class="text-xs">mL</span>
 							</div>
