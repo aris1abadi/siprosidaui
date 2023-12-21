@@ -3,6 +3,7 @@ import { writable } from 'svelte/store';
 export const firtLoad = writable(true)
 export const demoMode =writable(true)
 export const runMode = writable(0); //0 = menunggu,1 penyiraman,2 pestisida,3 biopestisida
+export const conect_status = writable(false)
 
 export const mqttStatus = writable(0);
 export const lengas1 = writable(0);

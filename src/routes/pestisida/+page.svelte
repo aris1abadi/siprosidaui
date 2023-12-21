@@ -16,7 +16,8 @@
 		volumeAir,
 		runMode,
 		resetAllValue,
-		demoMode
+		demoMode,
+		conect_status
 	} from '$lib/store/stores';
 	import Modal from '$lib/Modal.svelte';
 	import SveltyPicker from 'svelty-picker';
@@ -445,6 +446,20 @@
 		<div>
 			<img src=" /hd_pestisida1.png" alt="hd_pestisida" />
 		</div>
+		<div class="w-full h-4 grid justify-items-center my-2">
+			{#if $demoMode}
+				<div class="text-center text-xs bg-red-500 text-white w-12 h-4"><small>Demo</small></div>
+			{:else if $conect_status}
+				<div class="text-center text-xs bg-green-500 text-white w-12 h-4">
+					<small>Online</small>
+				</div>
+			{:else}
+				<div class="text-center text-xs bg-gray-700 text-white w-12 h-4">
+					<small>Offline</small>
+				</div>
+			{/if}
+		</div>
+
 		<div class="grid grid-cols-12 w-full h-1/2">
 			<div></div>
 			<div class="col-span-10 bg-white rounded-lg shadow-xl">

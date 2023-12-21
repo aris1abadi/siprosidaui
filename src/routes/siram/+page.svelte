@@ -21,7 +21,8 @@
 		jadwalSiram,
 		demoMode,
 		durasiManual,
-		runMode
+		runMode,
+		conect_status
 	} from '$lib/store/stores';
 
 	import Modal from '$lib/Modal.svelte';
@@ -442,9 +443,20 @@
 		<div>
 			<img src=" /hd_siram1.png" alt="hd_siram" />
 		</div>
-		{#if $demoMode}
-			<div class="text-center bg-red-500 text-white w-12 h-6">Demo</div>
-		{/if}
+		<div class="w-full h-4 grid justify-items-center my-2">
+			{#if $demoMode}
+				<div class="text-center text-xs bg-red-500 text-white w-12 h-4"><small>Demo</small></div>
+			{:else if $conect_status}
+				<div class="text-center text-xs bg-green-500 text-white w-12 h-4">
+					<small>Online</small>
+				</div>
+			{:else}
+				<div class="text-center text-xs bg-gray-700 text-white w-12 h-4">
+					<small>Offline</small>
+				</div>
+			{/if}
+		</div>
+
 		<div class="grid grid-cols-9 content-center justify-center mt-6">
 			<!--status lengas-->
 			<div></div>

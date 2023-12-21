@@ -31,7 +31,14 @@ import {
   mqttStatus,
   runMode,
   resetAllValue,
-  biopest_status
+  biopest_status,
+  conect_status,
+  dosisPestisida,
+  dosisAirPestisida,
+  dosisBiopest,
+  dosisAirBiopest,
+  jadwalBiopest,
+  newJadwalBiopest
 } from './store/stores';
 
 
@@ -53,13 +60,14 @@ import { onMount } from 'svelte';
  * EMQX's default port for mqtt connections is 1883, while for mqtts it is 8883.
  */
 
-const kontrolId = "2004"
+const kontrolId = "SP2003"
 
 const subMqtt = "bsip-out/" + kontrolId + "/#"
 const pubMqtt = "bsip-in/" + kontrolId + "/"
 const clientId = 'siprosida_' + Math.random().toString(16).substr(2, 8)
 //const host = 'ws://abadinet.my.id:2020'
 const host = 'wss://node-red.balingtansmart.my.id/ws'
+let sts_count = 0;
 
 const options = {
   keepalive: 30,
@@ -78,7 +86,7 @@ const options = {
   rejectUnauthorized: false
 }
 
-console.log('connecting mqtt client')
+//console.log('connecting mqtt client')
 const client = mqtt.connect(host, options)
 
 client.on('error', (err) => {
@@ -91,7 +99,7 @@ client.on('disconnect',() =>{
 })
 
 client.on('connect', () => {
-  console.log('client connected:' + clientId)
+  //console.log('client connected:' + clientId)
   mqttStatus.set(1);
   client.subscribe(subMqtt, { qos: 0 })
   let pubStatus = pubMqtt + "kontrol/0/status"
@@ -285,7 +293,9 @@ client.on('message', (topic, message, packet) => {
       jadwalPestisida.set(String(message))
       newJadwalPestisida.set(true)
     }else if(topicMqtt[4] === "pestisidaStatus"){
-      let sts = (String(message)).split(',');
+      const p_sts = (String(message)).split(';') 
+      //status
+      let sts = p_sts[0].split(',');
       if(sts[0] === '1'){
         pestisida_status.set(true);
       }else{
@@ -297,33 +307,128 @@ client.on('message', (topic, message, packet) => {
       }else{
         lahan1Pestisida_status.set(false)
       }
-
       if(sts[2] === "1"){
         lahan2Pestisida_status.set(true)
       }else{
         lahan2Pestisida_status.set(false)
       }
-
       if(sts[3] === "1"){
         lahan3Pestisida_status.set(true)
       }else{
         lahan3Pestisida_status.set(false)
       }
-
       if(sts[4] === "1"){
         lahan4Pestisida_status.set(true)
       }else{
         lahan4Pestisida_status.set(false)
       }
+      dosisPestisida.set(parseInt(sts[5]));
+      dosisAirPestisida.set(parseInt(sts[6]));
+
+      //jadwal petisida
+      let jw = p_sts[1] + ';' + p_sts[2] + ';' + p_sts[3] + ';'
+      jadwalPestisida.set(jw);
+      newJadwalPestisida.set(true)      
 
     }
 
   } else if (topicMqtt[2] === "biopest") {
+    if (topicMqtt[4] === "status") {
+      switch (topicMqtt[3]) {
+        case '0':
+          if (String(message) === '1') {
+            biopest_status.set(true)
+            lahan1Biopest_status.set(true)
+            lahan2Biopest_status.set(true)
+            lahan3Biopest_status.set(true)
+            lahan4Biopest_status.set(true)
+          } else {
+            biopest_status.set(false)
+            lahan1Biopest_status.set(false)
+            lahan2Biopest_status.set(false)
+            lahan3Biopest_status.set(false)
+            lahan4Biopest_status.set(false)
+          }
+          break;
+        case '1':
+          if (String(message) === '1') {
+            lahan1Biopest_status.set(true)
+          } else {
+            lahan1Biopest_status.set(false)
+          }
+          break;
+
+        case '2':
+          if (String(message) === '1') {
+            lahan2Biopest_status.set(true)
+          } else {
+            lahan2Biopest_status.set(false)
+          }
+          break;
+
+        case '3':
+          if (String(message) === '1') {
+            lahan3Biopest_status.set(true)
+          } else {
+            lahan3Biopest_status.set(false)
+          }
+          break;
+
+        case '4':
+          if (String(message) === '1') {
+            lahan4Biopest_status.set(true)
+          } else {
+            lahan4Biopest_status.set(false)
+          }
+          break;
+      }
+    }else if(topicMqtt[4] === "jadwalBiopest"){
+      jadwalBiopest.set(String(message))
+      newJadwalBiopest.set(true)
+    }else if(topicMqtt[4] === "biopestStatus"){
+      const p_sts = (String(message)).split(';') 
+      //status
+      let sts = p_sts[0].split(',');
+      if(sts[0] === '1'){
+        biopest_status.set(true);
+      }else{
+        biopest_status.set(false);
+        runMode.set(0)
+      }
+      if(sts[1] === "1"){
+        lahan1Biopest_status.set(true)
+      }else{
+        lahan1Biopest_status.set(false)
+      }
+      if(sts[2] === "1"){
+        lahan2Biopest_status.set(true)
+      }else{
+        lahan2Biopest_status.set(false)
+      }
+      if(sts[3] === "1"){
+        lahan3Biopest_status.set(true)
+      }else{
+        lahan3Biopest_status.set(false)
+      }
+      if(sts[4] === "1"){
+        lahan4Biopest_status.set(true)
+      }else{
+        lahan4Biopest_status.set(false)
+      }
+      dosisBiopest.set(parseInt(sts[5]));
+      dosisAirBiopest.set(parseInt(sts[6]));
+
+      //jadwal petisida
+      let jw = p_sts[1] + ';' + p_sts[2] + ';' + p_sts[3] + ';'
+      jadwalBiopest.set(jw);
+      newJadwalBiopest.set(true)      
+
+    }
 
   }else if(topicMqtt[2] === "kontrol"){
     if(topicMqtt[4] === "allStatus"){
       let sts = (String(message)).split(',');   
-      console.log("all status load")
+      //console.log("all status load")
       runMode.set(parseInt(sts[0]))
       switch(parseInt(sts[0])){
         case 0:
@@ -412,9 +517,23 @@ client.on('message', (topic, message, packet) => {
         break;
       }
       
+    }else if(topicMqtt[4] === "heartBeat"){
+      conect_status.set(true);
+      sts_count = 0;
+      //console.log("online")
     }
   }
 })
+
+setInterval(() => {
+  if (++sts_count > 7) {
+    sts_count = 0;
+    conect_status.set(false);
+  }
+  //console.log("cek status")
+}, 5000);
+
+
 
 client.on('close', () => {
   console.log(clientId + ' disconnected')
