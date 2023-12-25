@@ -27,7 +27,6 @@
 
 	import Modal from '$lib/Modal.svelte';
 	import SveltyPicker from 'svelty-picker';
-	import { tr } from 'svelty-picker/i18n';
 
 	let showjadwal = 0;
 	let showMode = 0; //1 = jadwal ,2 = set durasi,alert
@@ -75,7 +74,7 @@
 	});
 
 	function getAllStatus() {
-		kirimMsg('kontrol', 0, 'getAllStatus', '0');
+		kirimMsg('siram', 0, 'getAllStatus', '0');
 	}
 
 	function siramLahan(lahan) {
@@ -629,13 +628,23 @@
 			<div></div>
 		</div>
 
-		<div class="grid grid-cols-5 w-full h-12 justify-items-center mt-16">
-			<button on:click={() => goto('/')}>
-				<img class="h-8 w-8" src="/logout.png" alt="btn_out" />
+		<div class="grid grid-cols-5 w-full h-12 justify-items-center mt-8">
+			<button class="grid justify-items-center" on:click={() => goto('/')}>
+				<img class="h-8 w-8" src="/logout.png" alt="log out" />
+				<div>Logout</div>
 			</button>
-			<div class="col-span-3"></div>
-			<button on:click={() => goto('/home')}>
-				<img class="h-8 w-8" src="/btn_home2.png" alt="btn_home" />
+			<div class="col-span-2"></div>
+			{#if !$demoMode}
+				<button class="grid justify-items-center" on:click={() => goto('/tes')}>
+					<img class="h-8 w-8" src="/setup.png" alt="btn_setupout" />
+					<div>Setup</div>
+				</button>
+			{:else}
+				<div></div>
+			{/if}
+			<button class="grid justify-items-center" on:click={() => goto('/home')}>
+				<img class="h-8 w-8" src="/btn_home2.png" alt="go home" />
+				<div>Home</div>
 			</button>
 		</div>
 	</div>
@@ -710,8 +719,8 @@
 									type="number"
 									placeholder={String(durasiSiram1)}
 									bind:value={durasiSiram1}
-									min=1
-									max=60
+									min="1"
+									max="60"
 								/>
 								<div class="text-xs">mnt</div>
 							</div>
@@ -783,8 +792,8 @@
 									type="number"
 									placeholder={String(durasiSiram2)}
 									bind:value={durasiSiram2}
-									min=1
-									max=60
+									min="1"
+									max="60"
 								/>
 								<div class="text-xs">mnt</div>
 							</div>
@@ -856,8 +865,8 @@
 									type="number"
 									placeholder={String(durasiSiram3)}
 									bind:value={durasiSiram3}
-									min=1
-									max=60
+									min="1"
+									max="60"
 								/>
 								<div class="text-xs">mnt</div>
 							</div>

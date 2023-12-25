@@ -60,10 +60,10 @@ import { onMount } from 'svelte';
  * EMQX's default port for mqtt connections is 1883, while for mqtts it is 8883.
  */
 
-const kontrolId = "SP2003"
+const kontrolID = "SP2004"
 
-const subMqtt = "bsip-out/" + kontrolId + "/#"
-const pubMqtt = "bsip-in/" + kontrolId + "/"
+const subMqtt = "bsip-out/" + kontrolID + "/#"
+const pubMqtt = "bsip-in/" + kontrolID + "/"
 const clientId = 'siprosida_' + Math.random().toString(16).substr(2, 8)
 //const host = 'ws://abadinet.my.id:2020'
 const host = 'wss://node-red.balingtansmart.my.id/ws'
@@ -108,7 +108,7 @@ client.on('connect', () => {
 })
 
 client.on('message', (topic, message, packet) => {
-  //console.log('Received Message:= ' + message.toString() + '\nOn topic:= ' + topic)
+  console.log('Received Message:= ' + message.toString() + '\nOn topic:= ' + topic)
   const topicMqtt = topic.split('/');
   //console.log("type msg: " + topicMqtt[2] + "-" + topicMqtt[4] + " => " + message)
   //bsip-in/2002/kontrol/0/cmd

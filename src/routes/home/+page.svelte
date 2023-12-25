@@ -153,9 +153,17 @@
 
 		<div class="grid grid-cols-5 w-full h-12 justify-items-center mt-16">
 			<button on:click={() => goto('/')}>
-				<img class="h-8 w-8" src="/logout.png" alt="btn_out" />
+				<img class="h-8 w-8" src="/logout.png" alt="log out" />
+				<div>Logout</div>
 			</button>
-			<div class="col-span-4"></div>
+			<div class="col-span-3"></div>
+			{#if !$demoMode}
+			<button on:click={() => goto('/tes')}>
+				<img class="h-8 w-8" src="/setup.png" alt="setup" />
+				<div>Setup</div>
+			</button>
+			{/if}
+
 		</div>
 	</div>
 </div>

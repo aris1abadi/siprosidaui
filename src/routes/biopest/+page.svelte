@@ -55,6 +55,7 @@
 	let cekLahan3 = [false, false, false, false];
 
 	let showModal = false;
+	let faktorKalibrasi = 10;
 
 	onMount(() => {
 		resetAllValue();
@@ -73,7 +74,7 @@
 	});
 
 	function getAllStatus() {
-		kirimMsg('kontrol', 0, 'getAllStatus', '0');
+		kirimMsg('biopest', 0, 'getStatus', '0');
 	}
 
 	function semprotBiopest(lahan) {
@@ -199,13 +200,13 @@
 	}
 
 	function simpanDosisAirBiopest() {
-		if(!$demoMode){
-		kirimMsg('biopest', 0, 'dosisAirBiopest', String($dosisAirBiopest));
+		if (!$demoMode) {
+			kirimMsg('biopest', 0, 'dosisAirBiopest', String($dosisAirBiopest));
 		}
 	}
 	function simpanDosisBiopest() {
-		if(!$demoMode){
-		kirimMsg('biopest', 0, 'dosisBiopest', String($dosisBiopest));
+		if (!$demoMode) {
+			kirimMsg('biopest', 0, 'dosisBiopest', String($dosisBiopest));
 		}
 	}
 
@@ -343,13 +344,12 @@
 		//cek pilihan lahan dan hari
 		showMode = 1;
 		showjadwal = 0;
-		if($demoMode){
-			alertDemo()
-		}else{
-
-		let jwl = packingJadwal();
-		kirimMsg('biopest', 0, 'setJadwal', jwl);
-		//console.log(jwl);
+		if ($demoMode) {
+			alertDemo();
+		} else {
+			let jwl = packingJadwal();
+			kirimMsg('biopest', 0, 'setJadwal', jwl);
+			//console.log(jwl);
 		}
 	}
 
@@ -445,6 +445,18 @@
 			loadJadwal();
 			newJadwalBiopest.set(false);
 		}
+	}
+	function kalibrasiBiopest() {
+		showMode = 2;
+		showModal = true;
+	}
+
+	function kalibrasiStart() {
+		kirimMsg('biopest', 0, 'kalibrasi', String(faktorKalibrasi));
+	}
+
+	function simpanKalibrasi(val) {
+		kirimMsg('biopest', 0, 'simpanKalibrasi', String(val));
 	}
 </script>
 
@@ -615,6 +627,10 @@
 					<div class=" w-3/4 h-16 border rounded">
 						<div class="mt-1 text-center text-sm"></div>
 						<div class="text-center font-bold text-lg">{$volumeAir} Ltr</div>
+						<hr />
+						<button on:click={() => kalibrasiBiopest()} class="grid justify-items-center w-full">
+							<img class="w-6 h-6" src="/setup.png" alt="kalibrasi" />
+						</button>
 					</div>
 
 					<label class="swap swap-flip h-16 w-16">
@@ -637,12 +653,23 @@
 		</div>
 
 		<div class="grid grid-cols-5 w-full h-12 justify-items-center mt-16">
-			<button on:click={() => goto('/')}>
-				<img class="h-8 w-8" src="/logout.png" alt="btn_out" />
+			<button class="grid justify-items-center" on:click={() => goto('/')}>
+				<img class="h-8 w-8" src="/logout.png" alt="log out" />
+				<div>Logout</div>
 			</button>
-			<div class="col-span-3"></div>
-			<button on:click={() => goto('/home')}>
-				<img class="h-8 w-8" src="/btn_home2.png" alt="btn_home" />
+			<div class="col-span-2"></div>
+			{#if !$demoMode}
+				<button class="grid justify-items-center" on:click={() => goto('/tes')}>
+					<img class="h-8 w-8" src="/setup.png" alt="btn_setupout" />
+					<div>Setup</div>
+				</button>
+			{:else}
+				<div></div>
+			{/if}
+
+			<button class="grid justify-items-center" on:click={() => goto('/home')}>
+				<img class="h-8 w-8" src="/btn_home2.png" alt="go home" />
+				<div>Home</div>
 			</button>
 		</div>
 	</div>
@@ -1027,7 +1054,39 @@
 			</div>
 		{/if}
 	{:else if showMode === 2}
-		<div></div>
+		<div role="tablist" class="tabs tabs-lifted">
+			<input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Info" />
+			<div role="tabpanel" class="tab-content bg-base-100 border-base-300 p-2">
+				<div class="w-full h-36"></div>
+			</div>
+
+			<input
+				type="radio"
+				name="my_tabs_2"
+				role="tab"
+				class="tab"
+				aria-label="Kal pestisida"
+				checked
+			/>
+			<div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-2">
+				<div class="grid grid-cols-2 justify-items-center mt-4">
+					<div class="col-span-2 mb-4">Kalibrasi pada Volume 10mL</div>
+					<input bind:value={faktorKalibrasi} type="number" min="1" max="100" class="w-1/4 h-8" />
+					<button on:click={() => kalibrasiStart()} class="btn btn-outline ml-4 w-3/4"
+						>Mulai</button
+					>
+					<button
+						on:click={() => simpanKalibrasi(faktorKalibrasi)}
+						class="btn btn-active btn-primary mt-6 col-span-2">Simpan kalibrasi</button
+					>
+				</div>
+			</div>
+
+			<input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Kal Air" />
+			<div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-2">
+				<div class="w-full h-36"></div>
+			</div>
+		</div>
 	{:else if showMode === 3}
 		<!-- alert-->
 		<h3 class="text-xl font-bold text-center text-red-500">!!! Perhatian !!!</h3>
