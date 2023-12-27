@@ -56,6 +56,7 @@
 
 	let showModal = false;
 	let faktorKalibrasi = 10;
+	let alertType = 0;
 
 	onMount(() => {
 		resetAllValue();
@@ -79,91 +80,134 @@
 
 	function semprotPestisida(lahan) {
 		let msg = '0';
-		if ($runMode === 0 || $runMode === 2) {
-			runMode.set(2);
-			if (lahan === 0) {
-				if ($pestisida_status) {
-					msg = '1';
+		if ($conect_status) {
+			if ($runMode === 0 || $runMode === 2) {
+				runMode.set(2);
+				if (lahan === 0) {
+					if ($pestisida_status) {
+						msg = '1';
 
-					$lahan1Pestisida_status = true;
-					$lahan2Pestisida_status = true;
-					$lahan3Pestisida_status = true;
-					$lahan4Pestisida_status = true;
-				} else {
-					msg = '0';
+						$lahan1Pestisida_status = true;
+						$lahan2Pestisida_status = true;
+						$lahan3Pestisida_status = true;
+						$lahan4Pestisida_status = true;
+					} else {
+						msg = '0';
+						$lahan1Pestisida_status = false;
+						$lahan2Pestisida_status = false;
+						$lahan3Pestisida_status = false;
+						$lahan4Pestisida_status = false;
+					}
+				} else if (lahan === 1) {
+					if ($lahan1Pestisida_status) {
+						msg = '1';
+						$pestisida_status = true;
+					} else {
+						msg = '0';
+					}
+				} else if (lahan === 2) {
+					if ($lahan2Pestisida_status) {
+						msg = '1';
+						$pestisida_status = true;
+					} else {
+						msg = '0';
+					}
+				} else if (lahan === 3) {
+					if ($lahan3Pestisida_status) {
+						msg = '1';
+						$pestisida_status = true;
+					} else {
+						msg = '0';
+					}
+				} else if (lahan === 4) {
+					if ($lahan4Pestisida_status) {
+						msg = '1';
+						$pestisida_status = true;
+					} else {
+						msg = '0';
+					}
+				}
+				//if (readySend) {
+				if (!$demoMode) kirimMsg('pestisida', lahan, 'cmd', msg);
+				else {
+					alertDemo();
 					$lahan1Pestisida_status = false;
 					$lahan2Pestisida_status = false;
 					$lahan3Pestisida_status = false;
 					$lahan4Pestisida_status = false;
+					$pestisida_status = false;
 				}
-			} else if (lahan === 1) {
-				if ($lahan1Pestisida_status) {
-					msg = '1';
-					$pestisida_status = true;
-				} else {
-					msg = '0';
-				}
-			} else if (lahan === 2) {
-				if ($lahan2Pestisida_status) {
-					msg = '1';
-					$pestisida_status = true;
-				} else {
-					msg = '0';
-				}
-			} else if (lahan === 3) {
-				if ($lahan3Pestisida_status) {
-					msg = '1';
-					$pestisida_status = true;
-				} else {
-					msg = '0';
-				}
-			} else if (lahan === 4) {
-				if ($lahan4Pestisida_status) {
-					msg = '1';
-					$pestisida_status = true;
-				} else {
-					msg = '0';
-				}
-			}
-			//if (readySend) {
-			if (!$demoMode) kirimMsg('pestisida', lahan, 'cmd', msg);
-			else {
-				alertDemo();
+			} else {
+				//
 				$lahan1Pestisida_status = false;
 				$lahan2Pestisida_status = false;
 				$lahan3Pestisida_status = false;
 				$lahan4Pestisida_status = false;
 				$pestisida_status = false;
+				alertShow($runMode);
 			}
 		} else {
-			//
+			alertConect();
 			$lahan1Pestisida_status = false;
 			$lahan2Pestisida_status = false;
 			$lahan3Pestisida_status = false;
 			$lahan4Pestisida_status = false;
 			$pestisida_status = false;
-			alertShow($runMode);
 		}
 	}
 
 	function alertDemo() {
 		showModal = true;
-		showMode = 4;
+		showMode = 3;
+		alertType = 1;
+	}
+	function alertConect() {
+		showModal = true;
+		showMode = 3;
+		alertType = 2;
+	}
+	function alertLahan() {
+		showModal = true;
+		showMode = 3;
+		alertType = 3;
+	}
+	function alertHari() {
+		showModal = true;
+		showMode = 3;
+		alertType = 4;
+	}
+	function alertSimpanJadwal() {
+		showModal = true;
+		showMode = 3;
+		alertType = 5;
 	}
 
 	function alertShow(val) {
 		showModal = true;
-		showMode = 3;
+		showMode = val;
+		alertType = 0;
 	}
 
 	function simpanDosisAirPestisida() {
 		if (!$demoMode) {
-			kirimMsg('pestisida', 0, 'dosisAirPestisida', String($dosisAirPestisida));
+			if ($conect_status) {
+				kirimMsg('pestisida', 0, 'dosisAirPestisida', String($dosisAirPestisida));
+			} else {
+				alertConect();
+			}
+		} else {
+			alertDemo();
 		}
 	}
 	function simpanDosisPestisida() {
 		if (!$demoMode) {
-			kirimMsg('pestisida', 0, 'dosisPestisida', String($dosisPestisida));
+			if ($conect_status) {
+				kirimMsg('pestisida', 0, 'dosisPestisida', String($dosisPestisida));
+			} else {
+				alertConect();
+			}
+		} else {
+			alertDemo();
 		}
 	}
 
@@ -303,15 +347,75 @@
 	}
 
 	function simpanJadwalPestisida() {
-		showMode = 1;
-		showjadwal = 0;
+		let simpan = false;
 		if ($demoMode) {
 			alertDemo();
+		} else if (!$conect_status) {
+			alertConect();
+			jadwal1Enable = false;
+			jadwal2Enable = false;
+			jadwal3Enable = false;
 		} else {
-			let jwl = packingJadwal();
-			kirimMsg('pestisida', 0, 'setJadwal', jwl);
+			if (showjadwal === 1) {
+				if (!cekLahan1[0] && !cekLahan1[1] && !cekLahan1[2] && !cekLahan1[3]) {
+					alertLahan();
+				} else if (
+					!cekHari1[0] &&
+					!cekHari1[1] &&
+					!cekHari1[2] &&
+					!cekHari1[3] &&
+					!cekHari1[4] &&
+					!cekHari1[5] &&
+					!cekHari1[6]
+				) {
+					alertHari();
+				} else {
+					simpan = true;
+				}
+			} else if (showjadwal === 2) {
+				if (!cekLahan2[0] && !cekLahan2[1] && !cekLahan2[2] && !cekLahan2[3]) {
+					alertLahan();
+				} else if (
+					!cekHari2[0] &&
+					!cekHari2[1] &&
+					!cekHari2[2] &&
+					!cekHari2[3] &&
+					!cekHari2[4] &&
+					!cekHari2[5] &&
+					!cekHari2[6]
+				) {
+					alertHari();
+				} else {
+					simpan = true;
+				}
+			} else if (showjadwal === 3) {
+				if (!cekLahan3[0] && !cekLahan3[1] && !cekLahan3[2] && !cekLahan3[3]) {
+					alertLahan();
+				} else if (
+					!cekHari3[0] &&
+					!cekHari3[1] &&
+					!cekHari3[2] &&
+					!cekHari3[3] &&
+					!cekHari3[4] &&
+					!cekHari3[5] &&
+					!cekHari3[6]
+				) {
+					alertHari();
+				} else {
+					simpan = true;
+				}
+			}
+			if (simpan) {
+				alertSimpanJadwal();
+				showMode = 1;
+				showjadwal = 0;
+				let jwl = packingJadwal();
+				//console.log(jwl);
+				kirimMsg('pestisida', 0, 'setJadwal', jwl);
+			}
 		}
-		//console.log(jwl);
+
+		
 	}
 
 	function loadJadwal() {
@@ -443,11 +547,27 @@
 	}
 
 	function kalibrasiStart() {
-		kirimMsg('pestisida', 0, 'kalibrasi', String(faktorKalibrasi));
+		if (!$demoMode) {
+			if ($conect_status) {
+				kirimMsg('pestisida', 0, 'kalibrasi', String(faktorKalibrasi));
+			} else {
+				alertConect();
+			}
+		} else {
+			alertDemo();
+		}
 	}
 
 	function simpanKalibrasi(val) {
-		kirimMsg('pestisida', 0, 'simpanKalibrasi', String(val));
+		if (!$demoMode) {
+			if ($conect_status) {
+				kirimMsg('pestisida', 0, 'simpanKalibrasi', String(val));
+			} else {
+				alertConect();
+			}
+		} else {
+			alertDemo();
+		}
 	}
 </script>
 
@@ -1060,8 +1180,7 @@
 				<div class="grid grid-cols-2 justify-items-center mt-4">
 					<div class="col-span-2 mb-4">Kalibrasi pada Volume 10mL</div>
 					<input bind:value={faktorKalibrasi} type="number" min="1" max="100" class="w-1/4 h-8" />
-					<button on:click={() => kalibrasiStart()} class="btn btn-outline ml-4 w-3/4"
-						>Mulai</button
+					<button on:click={() => kalibrasiStart()} class="btn btn-outline ml-4 w-3/4">Mulai</button
 					>
 					<button
 						on:click={() => simpanKalibrasi(faktorKalibrasi)}
@@ -1079,19 +1198,23 @@
 		<!-- alert-->
 		<h3 class="text-xl font-bold text-center text-red-500">!!! Perhatian !!!</h3>
 		<hr />
-		{#if $runMode === 1}
-			<div>Sedang Penyiraman</div>
-		{:else if $runMode === 2}
-			<div>Sedang Penyemprotan Pestisida</div>
-		{:else if $runMode === 3}
-			<div>Sedang Penyemproten Biopest</div>
-		{/if}
-	{:else if showMode === 4}<!--mode demo-->
-		<div>
-			<h3 class="text-xl font-bold text-center text-red-500">!!! Perhatian !!!</h3>
-			<hr />
+		{#if alertType === 0}
+			{#if $runMode === 1}
+				<div>Sedang Penyiraman</div>
+			{:else if $runMode === 2}
+				<div>Sedang Penyemprotan Pestisida</div>
+			{:else if $runMode === 3}
+				<div>Sedang Penyemproten Biopest</div>
+			{/if}
+		{:else if alertType === 1}
 			<div class="text-center w-full">Fungsi ini tidak berjalan di mode Demo</div>
-		</div>
+		{:else if alertType === 2}<!--koneksi-->
+			<div class="text-center w-full">Sedang Offline</div>
+		{:else if alertType === 3}<!--lahan-->
+			<div class="text-center w-full">Pilih Lahan</div>
+		{:else if alertType === 4}<!--Hari-->
+			<div class="text-center w-full">Pilih Hari</div>
+		{/if}
 	{/if}
 </Modal>
 

@@ -56,6 +56,7 @@
 	let cekLahan3 = [false, false, false, false];
 
 	let showModal = false;
+	let alertType = 0;
 
 	onMount(() => {
 		resetAllValue();
@@ -79,108 +80,146 @@
 
 	function siramLahan(lahan) {
 		let lahanSts = '0';
-		if ($runMode === 0 || $runMode === 1) {
-			$runMode = 1;
-			if (lahan == 0) {
-				if ($siram_status) {
-					lahanSts = '1';
-					$lahan1_status = true;
-					$lahan2_status = true;
-					$lahan3_status = true;
-					$lahan4_status = true;
+		if ($conect_status) {
+			if ($runMode === 0 || $runMode === 1) {
+				$runMode = 1;
+				if (lahan == 0) {
+					if ($siram_status) {
+						lahanSts = '1';
+						$lahan1_status = true;
+						$lahan2_status = true;
+						$lahan3_status = true;
+						$lahan4_status = true;
+					} else {
+						lahanSts = '0';
+						$lahan1_status = false;
+						$lahan2_status = false;
+						$lahan3_status = false;
+						$lahan4_status = false;
+					}
+				} else if (lahan == 1) {
+					if ($lahan1_status) {
+						lahanSts = '1';
+						$siram_status = true;
+					} else {
+						lahanSts = '0';
+						//if (!$lahan2_status && !$lahan3_status && !$lahan4_status) {
+						//	$siram_status = false;
+						//}
+					}
+				} else if (lahan == 2) {
+					if ($lahan2_status) {
+						lahanSts = '1';
+						$siram_status = true;
+					} else {
+						lahanSts = '0';
+						//if (!$lahan1_status && !$lahan3_status && !$lahan4_status) {
+						//	$siram_status = false;
+						//}
+					}
+				} else if (lahan == 3) {
+					if ($lahan3_status) {
+						lahanSts = '1';
+						$siram_status = true;
+					} else {
+						lahanSts = '0';
+						//if (!$lahan2_status && !$lahan1_status && !$lahan4_status) {
+						//	$siram_status = false;
+						//}
+					}
+				} else if (lahan == 4) {
+					if ($lahan4_status) {
+						lahanSts = '1';
+						$siram_status = true;
+					} else {
+						lahanSts = '0';
+						//if (!$lahan2_status && !$lahan3_status && !$lahan1_status) {
+						//	$siram_status = false;
+						//}
+					}
+				}
+
+				//console.log('siram lahan ' + lahan + '=> ' + lahanSts + '(1=ON,0=OFF)');
+				if (!$demoMode) {
+					kirimMsg('siram', lahan, 'cmd', lahanSts);
 				} else {
-					lahanSts = '0';
+					alertDemo();
 					$lahan1_status = false;
 					$lahan2_status = false;
 					$lahan3_status = false;
 					$lahan4_status = false;
+					$siram_status = false;
 				}
-			} else if (lahan == 1) {
-				if ($lahan1_status) {
-					lahanSts = '1';
-					$siram_status = true;
-				} else {
-					lahanSts = '0';
-					//if (!$lahan2_status && !$lahan3_status && !$lahan4_status) {
-					//	$siram_status = false;
-					//}
-				}
-			} else if (lahan == 2) {
-				if ($lahan2_status) {
-					lahanSts = '1';
-					$siram_status = true;
-				} else {
-					lahanSts = '0';
-					//if (!$lahan1_status && !$lahan3_status && !$lahan4_status) {
-					//	$siram_status = false;
-					//}
-				}
-			} else if (lahan == 3) {
-				if ($lahan3_status) {
-					lahanSts = '1';
-					$siram_status = true;
-				} else {
-					lahanSts = '0';
-					//if (!$lahan2_status && !$lahan1_status && !$lahan4_status) {
-					//	$siram_status = false;
-					//}
-				}
-			} else if (lahan == 4) {
-				if ($lahan4_status) {
-					lahanSts = '1';
-					$siram_status = true;
-				} else {
-					lahanSts = '0';
-					//if (!$lahan2_status && !$lahan3_status && !$lahan1_status) {
-					//	$siram_status = false;
-					//}
-				}
-			}
-
-			//console.log('siram lahan ' + lahan + '=> ' + lahanSts + '(1=ON,0=OFF)');
-			if (!$demoMode) {
-				kirimMsg('siram', lahan, 'cmd', lahanSts);
 			} else {
-				alertDemo();
+				//
 				$lahan1_status = false;
 				$lahan2_status = false;
 				$lahan3_status = false;
 				$lahan4_status = false;
 				$siram_status = false;
+
+				alertShow($runMode);
 			}
 		} else {
-			//
+			alertConect();
 			$lahan1_status = false;
 			$lahan2_status = false;
 			$lahan3_status = false;
 			$lahan4_status = false;
 			$siram_status = false;
-
-			alertShow($runMode);
 		}
 	}
 
 	function alertDemo() {
 		showModal = true;
-		showMode = 4;
+		showMode = 3;
+		alertType = 1;
+	}
+	function alertConect() {
+		showModal = true;
+		showMode = 3;
+		alertType = 2;
+	}
+	function alertLahan() {
+		showModal = true;
+		showMode = 3;
+		alertType = 3;
+	}
+	function alertHari() {
+		showModal = true;
+		showMode = 3;
+		alertType = 4;
+	}
+	function alertSimpanJadwal() {
+		showModal = true;
+		showMode = 3;
+		alertType = 5;
 	}
 
 	function alertShow(val) {
 		showModal = true;
-		showMode = 3;
+		showMode = val;
+		alertType = 0;
 	}
 
 	function setUseLengas() {
 		let ln = '0';
 		if ($useLengas) {
-			console.log('pake lengas');
+			//console.log('pake lengas');
 			ln = '1';
 		} else {
-			console.log('lengas off');
+			//console.log('lengas off');
 			ln = '0';
 		}
 		if (!$demoMode) {
-			kirimMsg('siram', '0', 'useLengas', ln);
+			if ($conect_status) {
+				kirimMsg('siram', '0', 'useLengas', ln);
+			} else {
+				alertConect();
+				$useLengas = false;
+			}
+		} else {
+			alertDemo();
 		}
 	}
 
@@ -234,9 +273,15 @@
 	}
 
 	function trigerLengasChange() {
-		console.log('triger lengas: ' + $ambangLengas);
+		//console.log('triger lengas: ' + $ambangLengas);
 		if (!$demoMode) {
-			kirimMsg('siram', '0', 'setAmbang', String($ambangLengas));
+			if ($conect_status) {
+				kirimMsg('siram', '0', 'setAmbang', String($ambangLengas));
+			} else {
+				alertConect();
+			}
+		} else {
+			alertDemo();
 		}
 	}
 	function packingJadwal() {
@@ -321,14 +366,72 @@
 	}
 
 	function simpanJadwalSiram() {
+		let simpan = false;
 		if ($demoMode) {
 			alertDemo();
+		} else if (!$conect_status) {
+			alertConect();
+			jadwal1Enable = false;
+			jadwal2Enable = false;
+			jadwal3Enable = false;
 		} else {
-			showMode = 1;
-			showjadwal = 0;
-			let jwl = packingJadwal();
-			//console.log(jwl);
-			kirimMsg('siram', 0, 'setJadwal', jwl);
+			if (showjadwal === 1) {
+				if (!cekLahan1[0] && !cekLahan1[1] && !cekLahan1[2] && !cekLahan1[3]) {
+					alertLahan();
+				} else if (
+					!cekHari1[0] &&
+					!cekHari1[1] &&
+					!cekHari1[2] &&
+					!cekHari1[3] &&
+					!cekHari1[4] &&
+					!cekHari1[5] &&
+					!cekHari1[6]
+				) {
+					alertHari();
+				} else {
+					simpan = true;
+				}
+			} else if (showjadwal === 2) {
+				if (!cekLahan2[0] && !cekLahan2[1] && !cekLahan2[2] && !cekLahan2[3]) {
+					alertLahan();
+				} else if (
+					!cekHari2[0] &&
+					!cekHari2[1] &&
+					!cekHari2[2] &&
+					!cekHari2[3] &&
+					!cekHari2[4] &&
+					!cekHari2[5] &&
+					!cekHari2[6]
+				) {
+					alertHari();
+				} else {
+					simpan = true;
+				}
+			} else if (showjadwal === 3) {
+				if (!cekLahan3[0] && !cekLahan3[1] && !cekLahan3[2] && !cekLahan3[3]) {
+					alertLahan();
+				} else if (
+					!cekHari3[0] &&
+					!cekHari3[1] &&
+					!cekHari3[2] &&
+					!cekHari3[3] &&
+					!cekHari3[4] &&
+					!cekHari3[5] &&
+					!cekHari3[6]
+				) {
+					alertHari();
+				} else {
+					simpan = true;
+				}
+			}
+			if (simpan) {
+				alertSimpanJadwal();
+				showMode = 1;
+				showjadwal = 0;
+				let jwl = packingJadwal();
+				//console.log(jwl);
+				kirimMsg('siram', 0, 'setJadwal', jwl);
+			}
 		}
 	}
 
@@ -432,7 +535,13 @@
 
 	function simpanDurasi() {
 		if (!$demoMode) {
+			if($conect_status){
 			kirimMsg('siram', 0, 'setDurasi', String($durasiManual));
+			}else{
+				alertConect()
+			}
+		}else{
+			alertDemo()
 		}
 	}
 </script>
@@ -922,7 +1031,7 @@
 			<input
 				type="range"
 				min="2"
-				max="100"
+				max="30"
 				bind:value={$durasiManual}
 				on:change={() => simpanDurasi()}
 				class="range range-warning col-span-2"
@@ -936,19 +1045,24 @@
 		<!-- alert-->
 		<h3 class="text-xl font-bold text-center text-red-500">!!! Perhatian !!!</h3>
 		<hr />
-		{#if $runMode === 1}
-			<div>Sedang Penyiraman</div>
-		{:else if $runMode === 2}
-			<div>Sedang Penyemprotan Pestisida</div>
-		{:else if $runMode === 3}
-			<div>Sedang Penyemproten Biopest</div>
-		{/if}
-	{:else if showMode === 4}
-		<div>
-			<h3 class="text-xl font-bold text-center text-red-500">!!! Perhatian !!!</h3>
-			<hr />
+
+		{#if alertType === 0}
+			{#if $runMode === 1}
+				<div>Sedang Penyiraman</div>
+			{:else if $runMode === 2}
+				<div>Sedang Penyemprotan Pestisida</div>
+			{:else if $runMode === 3}
+				<div>Sedang Penyemproten Biopest</div>
+			{/if}
+		{:else if alertType === 1}
 			<div class="text-center w-full">Fungsi ini tidak berjalan di mode Demo</div>
-		</div>
+		{:else if alertType === 2}<!--koneksi-->
+			<div class="text-center w-full">Sedang Offline</div>
+		{:else if alertType === 3}<!--lahan-->
+			<div class="text-center w-full">Pilih Lahan</div>
+		{:else if alertType === 4}<!--Hari-->
+			<div class="text-center w-full">Pilih Hari</div>
+		{/if}
 	{/if}
 </Modal>
 

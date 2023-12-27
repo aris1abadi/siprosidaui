@@ -56,6 +56,7 @@
 
 	let showModal = false;
 	let faktorKalibrasi = 10;
+	let alertType = 0
 
 	onMount(() => {
 		resetAllValue();
@@ -79,6 +80,7 @@
 
 	function semprotBiopest(lahan) {
 		let msg = '0';
+		if($conect_status)
 		if ($runMode === 0 || $runMode === 3) {
 			runMode.set(3);
 			if (lahan === 0) {
@@ -161,13 +163,37 @@
 
 	function alertDemo() {
 		showModal = true;
-		showMode = 4;
+		showMode = 3;
+		alertType = 1;
+	}
+	function alertConect() {
+		showModal = true;
+		showMode = 3;
+		alertType = 2;
+	}
+	function alertLahan() {
+		showModal = true;
+		showMode = 3;
+		alertType = 3;
+	}
+	function alertHari() {
+		showModal = true;
+		showMode = 3;
+		alertType = 4;
+	}
+	function alertSimpanJadwal() {
+		showModal = true;
+		showMode = 3;
+		alertType = 5;
 	}
 
 	function alertShow(val) {
 		showModal = true;
-		showMode = 3;
+		showMode = val;
+		alertType = 0;
 	}
+
+	
 
 	function pilihLahanBiopest(lh) {
 		let lahanSts = '0';
@@ -201,12 +227,24 @@
 
 	function simpanDosisAirBiopest() {
 		if (!$demoMode) {
+			if($conect_status){
 			kirimMsg('biopest', 0, 'dosisAirBiopest', String($dosisAirBiopest));
+			}else{
+				alertConect()
+			}
+		}else{
+			alertDemo()
 		}
 	}
 	function simpanDosisBiopest() {
 		if (!$demoMode) {
+			if($conect_status){
 			kirimMsg('biopest', 0, 'dosisBiopest', String($dosisBiopest));
+			}else{
+				alertConect()
+			}
+		}else{
+			alertDemo()
 		}
 	}
 
@@ -341,16 +379,74 @@
 		return jw;
 	}
 	function simpanJadwalBiopest(idxJadwal) {
-		//cek pilihan lahan dan hari
-		showMode = 1;
-		showjadwal = 0;
+		let simpan = false;
 		if ($demoMode) {
 			alertDemo();
+		} else if (!$conect_status) {
+			alertConect();
+			jadwal1Enable = false;
+			jadwal2Enable = false;
+			jadwal3Enable = false;
 		} else {
-			let jwl = packingJadwal();
-			kirimMsg('biopest', 0, 'setJadwal', jwl);
-			//console.log(jwl);
+			if (showjadwal === 1) {
+				if (!cekLahan1[0] && !cekLahan1[1] && !cekLahan1[2] && !cekLahan1[3]) {
+					alertLahan();
+				} else if (
+					!cekHari1[0] &&
+					!cekHari1[1] &&
+					!cekHari1[2] &&
+					!cekHari1[3] &&
+					!cekHari1[4] &&
+					!cekHari1[5] &&
+					!cekHari1[6]
+				) {
+					alertHari();
+				} else {
+					simpan = true;
+				}
+			} else if (showjadwal === 2) {
+				if (!cekLahan2[0] && !cekLahan2[1] && !cekLahan2[2] && !cekLahan2[3]) {
+					alertLahan();
+				} else if (
+					!cekHari2[0] &&
+					!cekHari2[1] &&
+					!cekHari2[2] &&
+					!cekHari2[3] &&
+					!cekHari2[4] &&
+					!cekHari2[5] &&
+					!cekHari2[6]
+				) {
+					alertHari();
+				} else {
+					simpan = true;
+				}
+			} else if (showjadwal === 3) {
+				if (!cekLahan3[0] && !cekLahan3[1] && !cekLahan3[2] && !cekLahan3[3]) {
+					alertLahan();
+				} else if (
+					!cekHari3[0] &&
+					!cekHari3[1] &&
+					!cekHari3[2] &&
+					!cekHari3[3] &&
+					!cekHari3[4] &&
+					!cekHari3[5] &&
+					!cekHari3[6]
+				) {
+					alertHari();
+				} else {
+					simpan = true;
+				}
+			}
+			if (simpan) {
+				alertSimpanJadwal();
+				showMode = 1;
+				showjadwal = 0;
+				let jwl = packingJadwal();
+				//console.log(jwl);
+				kirimMsg('biopest', 0, 'setJadwal', jwl);
+			}
 		}
+
 	}
 
 	function loadJadwal() {
@@ -452,11 +548,28 @@
 	}
 
 	function kalibrasiStart() {
+		if(!$demoMode){
+			if($conect_status){
 		kirimMsg('biopest', 0, 'kalibrasi', String(faktorKalibrasi));
+			}else{
+				alertConect()
+			}
+		}else{
+			alertDemo()
+		}
 	}
 
 	function simpanKalibrasi(val) {
-		kirimMsg('biopest', 0, 'simpanKalibrasi', String(val));
+		if(!$demoMode){
+			if($conect_status){
+				kirimMsg('biopest', 0, 'simpanKalibrasi', String(val));
+			}else{
+				alertConect()
+			}
+		}else{
+			alertDemo()
+		}
+		
 	}
 </script>
 
@@ -1098,12 +1211,7 @@
 		{:else if $runMode === 3}
 			<div>Sedang Penyemproten Biopest</div>
 		{/if}
-	{:else if showMode === 4}
-		<div>
-			<h3 class="text-xl font-bold text-center text-red-500">!!! Perhatian !!!</h3>
-			<hr />
-			<div class="text-center w-full">Fungsi ini tidak berjalan di mode Demo</div>
-		</div>
+	
 	{/if}
 </Modal>
 
