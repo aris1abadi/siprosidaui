@@ -56,6 +56,7 @@
 
 	let showModal = false;
 	let faktorKalibrasi = 10;
+	let faktorKalibrasiAir = 10;
 	let alertType = 0
 
 	onMount(() => {
@@ -559,10 +560,35 @@
 		}
 	}
 
+	function kalibrasiAirStart() {
+		if(!$demoMode){
+			if($conect_status){
+		kirimMsg('biopest', 0, 'kalibrasiAir', String(faktorKalibrasiAir));
+			}else{
+				alertConect()
+			}
+		}else{
+			alertDemo()
+		}
+	}
+
 	function simpanKalibrasi(val) {
 		if(!$demoMode){
 			if($conect_status){
 				kirimMsg('biopest', 0, 'simpanKalibrasi', String(val));
+			}else{
+				alertConect()
+			}
+		}else{
+			alertDemo()
+		}
+		
+	}
+
+	function simpanKalibrasiAir(val) {
+		if(!$demoMode){
+			if($conect_status){
+				kirimMsg('biopest', 0, 'simpanKalibrasiAir', String(val));
 			}else{
 				alertConect()
 			}
@@ -596,23 +622,13 @@
 			<div></div>
 			<div class="col-span-10 bg-white rounded-lg shadow-xl">
 				<div class="text-sm font-bold text-center mt-2">DOSIS BIOPESTISIDA</div>
-				<div class="grid grid-cols-2 gap-4 h-20 px-6 mt-4">
-					<label class=" border rounded border-emerald-950">
-						<div class="text-center bg-red-100 rounded rounded-bl-none rounded-br-none">Air</div>
+				<div class="grid grid-cols-2 gap-2 h-16 px-2 mt-4">
+					<label class=" border rounded border-emerald-650">
+						<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">Air <b>{$dosisAirBiopest}</b> Liter</div>
 						<div class="grid justify-items-center">
-							<div>
-								<input
-									class="text-center text-xl w-1/2 font-bold"
-									type="number"
-									bind:value={$dosisAirBiopest}
-									on:change={() => simpanDosisAirBiopest()}
-									min="1"
-									max="20"
-								/>
-								<span class="text-xs">Liter</span>
-							</div>
+							
 							<input
-								class="w-3/4 h-2 mt-2"
+								class="w-3/4 h-2 mt-4"
 								type="range"
 								on:change={() => simpanDosisAirBiopest()}
 								bind:value={$dosisAirBiopest}
@@ -622,29 +638,19 @@
 						</div>
 					</label>
 
-					<label class=" border rounded border-emerald-950">
-						<div class="text-center bg-red-100 rounded rounded-bl-none rounded-br-none">
-							Biopestisida
+					<label class=" border rounded border-emerald-650">
+						<div class="text-center text-xs bg-red-100 rounded rounded-bl-none rounded-br-none">
+							Biopestisida <b>{$dosisBiopest}</b> mL
 						</div>
 						<div class="grid justify-items-center">
-							<div>
-								<input
-									class="text-center text-xl w-1/2 font-bold"
-									type="number"
-									bind:value={$dosisBiopest}
-									on:change={() => simpanDosisBiopest()}
-									min="1"
-									max="100"
-								/>
-								<span class="text-xs">mL</span>
-							</div>
+							
 							<input
-								class="w-3/4 h-2 mt-2"
+								class="w-3/4 h-2 mt-4"
 								type="range"
 								bind:value={$dosisBiopest}
 								on:change={() => simpanDosisBiopest()}
 								min="1"
-								max="100"
+								max="50"
 							/>
 						</div>
 					</label>
@@ -746,7 +752,7 @@
 						</button>
 					</div>
 
-					<label class="swap swap-flip h-16 w-16">
+					<label class="swap h-16 w-16">
 						<!-- this hidden checkbox controls the state -->
 						<input
 							type="checkbox"
@@ -1178,13 +1184,13 @@
 				name="my_tabs_2"
 				role="tab"
 				class="tab"
-				aria-label="Kal pestisida"
+				aria-label="Kal biopest"
 				checked
 			/>
 			<div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-2">
 				<div class="grid grid-cols-2 justify-items-center mt-4">
 					<div class="col-span-2 mb-4">Kalibrasi pada Volume 10mL</div>
-					<input bind:value={faktorKalibrasi} type="number" min="1" max="100" class="w-1/4 h-8" />
+					<input bind:value={faktorKalibrasi} type="number" min="1" max="20" class="w-1/4 h-8" />
 					<button on:click={() => kalibrasiStart()} class="btn btn-outline ml-4 w-3/4"
 						>Mulai</button
 					>
@@ -1197,21 +1203,40 @@
 
 			<input type="radio" name="my_tabs_2" role="tab" class="tab" aria-label="Kal Air" />
 			<div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-2">
-				<div class="w-full h-36"></div>
+				<div class="grid grid-cols-2 justify-items-center mt-4">
+					<div class="col-span-2 mb-4">Kalibrasi pada Volume Air 3L</div>
+					<input bind:value={faktorKalibrasi} type="number" min="1" max="20" class="w-1/4 h-8" />
+					<button on:click={() => kalibrasiAirStart()} class="btn btn-outline ml-4 w-3/4"
+						>Mulai</button
+					>
+					<button
+						on:click={() => simpanKalibrasiAir(faktorKalibrasiAir)}
+						class="btn btn-active btn-primary mt-6 col-span-2">Simpan kalibrasi Air</button
+					>
+				</div>
 			</div>
 		</div>
 	{:else if showMode === 3}
 		<!-- alert-->
 		<h3 class="text-xl font-bold text-center text-red-500">!!! Perhatian !!!</h3>
 		<hr />
-		{#if $runMode === 1}
-			<div>Sedang Penyiraman</div>
-		{:else if $runMode === 2}
-			<div>Sedang Penyemprotan Pestisida</div>
-		{:else if $runMode === 3}
-			<div>Sedang Penyemproten Biopest</div>
+		{#if alertType === 0}
+			{#if $runMode === 1}
+				<div>Sedang Penyiraman</div>
+			{:else if $runMode === 2}
+				<div>Sedang Penyemprotan Pestisida</div>
+			{:else if $runMode === 3}
+				<div>Sedang Penyemproten Biopest</div>
+			{/if}
+		{:else if alertType === 1}
+			<div class="text-center w-full">Fungsi ini tidak berjalan di mode Demo</div>
+		{:else if alertType === 2}<!--koneksi-->
+			<div class="text-center w-full">Sedang Offline</div>
+		{:else if alertType === 3}<!--lahan-->
+			<div class="text-center w-full">Pilih Lahan</div>
+		{:else if alertType === 4}<!--Hari-->
+			<div class="text-center w-full">Pilih Hari</div>
 		{/if}
-	
 	{/if}
 </Modal>
 

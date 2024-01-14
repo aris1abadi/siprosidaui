@@ -24,10 +24,11 @@ export const lahan2_status = writable(false)
 export const lahan3_status = writable(false)
 export const lahan4_status = writable(false)
 export const siram_status = writable(false)
-export const volumeAir = writable(0)
+export const volumeAir = writable("0.00 ltr")
 export const jadwalSiram =writable(" ")
 export const newJadwalSiram = writable(false)
 export const durasiManual = writable(5)
+export const siramCount = writable("00:00")
 
 
 //biopest

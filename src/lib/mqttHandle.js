@@ -38,7 +38,8 @@ import {
   dosisBiopest,
   dosisAirBiopest,
   jadwalBiopest,
-  newJadwalBiopest
+  newJadwalBiopest,
+  siramCount
 } from './store/stores';
 
 
@@ -60,7 +61,7 @@ import { onMount } from 'svelte';
  * EMQX's default port for mqtt connections is 1883, while for mqtts it is 8883.
  */
 
-const kontrolID = "SP2009"
+const kontrolID = "SP5578"
 
 const subMqtt = "bsip-out/" + kontrolID + "/#"
 const pubMqtt = "bsip-in/" + kontrolID + "/"
@@ -108,7 +109,7 @@ client.on('connect', () => {
 })
 
 client.on('message', (topic, message, packet) => {
-  console.log('Received Message:= ' + message.toString() + '\nOn topic:= ' + topic)
+  //console.log('Received Message:= ' + message.toString() + '\nOn topic:= ' + topic)
   const topicMqtt = topic.split('/');
   //console.log("type msg: " + topicMqtt[2] + "-" + topicMqtt[4] + " => " + message)
   //bsip-in/2002/kontrol/0/cmd
@@ -135,7 +136,7 @@ client.on('message', (topic, message, packet) => {
 
   } else if (topicMqtt[2] === "sensorFlow") {
     if (topicMqtt[4] === "volumeRate") {
-      volumeAir.set(parseInt(String(message)))
+      volumeAir.set(String(message))
     }
 
   }else if (topicMqtt[2] === "siram") {
@@ -237,6 +238,10 @@ client.on('message', (topic, message, packet) => {
         lahan4_status.set(false)
       }
 
+    }else if(topicMqtt[4] === "siramCount"){
+      let sc = (message.toString()).split('-');
+      siramCount.set(sc[0])
+      volumeAir.set(sc[1])
     }
 
   } else if (topicMqtt[2] === "pestisida") {
@@ -521,6 +526,10 @@ client.on('message', (topic, message, packet) => {
       conect_status.set(true);
       sts_count = 0;
       //console.log("online")
+    }else if(topicMqtt[4] === "siramCount"){
+      let sc = (message.toString()).split('-');
+      siramCount.set(sc[0])
+      volumeAir.set(sc[1])
     }
   }
 })

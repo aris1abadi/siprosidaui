@@ -22,7 +22,8 @@
 		demoMode,
 		durasiManual,
 		runMode,
-		conect_status
+		conect_status,
+		siramCount
 	} from '$lib/store/stores';
 
 	import Modal from '$lib/Modal.svelte';
@@ -70,12 +71,17 @@
 		}
 		getAllStatus();
 		//	newJadwalSiram.set(false);
+		setTimeout(getDurasiSiram,1000)
+
 		//}
 		showjadwal = 0;
 	});
 
 	function getAllStatus() {
 		kirimMsg('siram', 0, 'getAllStatus', '0');
+	}
+	function getDurasiSiram(){
+		kirimMsg('siram',0,'getDurasi','0')
 	}
 
 	function siramLahan(lahan) {
@@ -103,9 +109,9 @@
 						$siram_status = true;
 					} else {
 						lahanSts = '0';
-						//if (!$lahan2_status && !$lahan3_status && !$lahan4_status) {
-						//	$siram_status = false;
-						//}
+						if (!$lahan2_status && !$lahan3_status && !$lahan4_status) {
+							$siram_status = false;
+						}
 					}
 				} else if (lahan == 2) {
 					if ($lahan2_status) {
@@ -113,9 +119,9 @@
 						$siram_status = true;
 					} else {
 						lahanSts = '0';
-						//if (!$lahan1_status && !$lahan3_status && !$lahan4_status) {
-						//	$siram_status = false;
-						//}
+						if (!$lahan1_status && !$lahan3_status && !$lahan4_status) {
+							$siram_status = false;
+						}
 					}
 				} else if (lahan == 3) {
 					if ($lahan3_status) {
@@ -123,9 +129,9 @@
 						$siram_status = true;
 					} else {
 						lahanSts = '0';
-						//if (!$lahan2_status && !$lahan1_status && !$lahan4_status) {
-						//	$siram_status = false;
-						//}
+						if (!$lahan2_status && !$lahan1_status && !$lahan4_status) {
+							$siram_status = false;
+						}
 					}
 				} else if (lahan == 4) {
 					if ($lahan4_status) {
@@ -133,9 +139,9 @@
 						$siram_status = true;
 					} else {
 						lahanSts = '0';
-						//if (!$lahan2_status && !$lahan3_status && !$lahan1_status) {
-						//	$siram_status = false;
-						//}
+						if (!$lahan2_status && !$lahan3_status && !$lahan1_status) {
+							$siram_status = false;
+						}
 					}
 				}
 
@@ -453,15 +459,19 @@
 		for (let i = 0; i < 7; i++) {
 			if (jadwal1[5 + i] === '1') {
 				cekHari1[i] = true;
+				pilihanHari1[i] = 1;
 			} else {
 				cekHari1[i] = false;
+				pilihanHari1[i] = 0;
 			}
 		}
 		for (let i = 0; i < 4; i++) {
 			if (jadwal1[12 + i] === '1') {
 				cekLahan1[i] = true;
+				pilihanLahan1[i] = 1
 			} else {
 				cekLahan1[i] = false;
+				pilihanLahan1[i] = 0;
 			}
 		}
 		durasiSiram1 = parseInt(jadwal1[18]);
@@ -477,15 +487,19 @@
 		for (let i = 0; i < 7; i++) {
 			if (jadwal2[5 + i] === '1') {
 				cekHari2[i] = true;
+				pilihanHari2[i] = 1;
 			} else {
 				cekHari2[i] = false;
+				pilihanHari2[i] = 0;
 			}
 		}
 		for (let i = 0; i < 4; i++) {
 			if (jadwal2[12 + i] === '1') {
 				cekLahan2[i] = true;
+				pilihanLahan2[i] = 1
 			} else {
-				cekLahan2[i] = false;
+				cekLahan2[i] = false; 
+				pilihanLahan2[i] = 0
 			}
 		}
 		durasiSiram2 = parseInt(jadwal1[18]);
@@ -501,15 +515,19 @@
 		for (let i = 0; i < 7; i++) {
 			if (jadwal3[5 + i] === '1') {
 				cekHari3[i] = true;
+				pilihanHari3[i] = 1
 			} else {
 				cekHari3[i] = false;
+				pilihanHari3[i] = 0
 			}
 		}
 		for (let i = 0; i < 4; i++) {
 			if (jadwal3[12 + i] === '1') {
 				cekLahan3[i] = true;
+				pilihanLahan3[i] = 1
 			} else {
 				cekLahan3[i] = false;
+				pilihanLahan3[i] = 0
 			}
 		}
 		durasiSiram3 = parseInt(jadwal1[18]);
@@ -717,11 +735,12 @@
 								class="text-xs text-center w-full h-6 mb-2 bg-green-200"
 								><small>Durasi {$durasiManual} menit</small></button
 							>
-							<div class="h-8 bg-blue-200 pt-2">
-								<div class="text-center text-xs font-bold">Air {$volumeAir} Ltr</div>
+							<div class="h-8 bg-blue-200 ">
+								<div class="text-center text-xs ">{$siramCount}</div>
+								<div class="text-center text-xs ">{$volumeAir}</div>
 							</div>
 						</div>
-						<label class="swap swap-flip h-16 w-16">
+						<label class="swap h-16 w-16">
 							<!-- this hidden checkbox controls the state -->
 							<input type="checkbox" bind:checked={$siram_status} on:change={() => siramLahan(0)} />
 							<div class="swap-on">
