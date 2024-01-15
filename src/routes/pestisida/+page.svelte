@@ -562,7 +562,7 @@
 	function kalibrasiAirStart() {
 		if (!$demoMode) {
 			if ($conect_status) {
-				kirimMsg('pestisida', 0, 'kalibrasiAir', String(faktorKalibrasi));
+				kirimMsg('pestisida', 0, 'kalibrasiAir', String(faktorKalibrasiAir));
 			} else {
 				alertConect();
 			}

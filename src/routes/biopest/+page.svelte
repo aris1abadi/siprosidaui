@@ -1205,7 +1205,7 @@
 			<div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-2">
 				<div class="grid grid-cols-2 justify-items-center mt-4">
 					<div class="col-span-2 mb-4">Kalibrasi pada Volume Air 3L</div>
-					<input bind:value={faktorKalibrasi} type="number" min="1" max="20" class="w-1/4 h-8" />
+					<input bind:value={faktorKalibrasiAir} type="number" min="1" max="20" class="w-1/4 h-8" />
 					<button on:click={() => kalibrasiAirStart()} class="btn btn-outline ml-4 w-3/4"
 						>Mulai</button
 					>
