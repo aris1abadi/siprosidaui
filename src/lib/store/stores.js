@@ -1,15 +1,23 @@
 import { writable } from 'svelte/store';
+import { persisted } from 'svelte-persisted-store'
 
 export const firtLoad = writable(true)
 export const demoMode =writable(true)
 export const runMode = writable(0); //0 = menunggu,1 penyiraman,2 pestisida,3 biopestisida
 export const conect_status = writable(false)
+export const loginStatus = writable(false)
 
 export const mqttStatus = writable(0);
 export const lengas1 = writable(0);
 export const lengas2 = writable(0);
 export const lengas3 = writable(0);
 export const lengas4 = writable(0);
+
+export const lengas1raw = writable('0');
+export const lengas2raw = writable('0');
+export const lengas3raw = writable('0');
+export const lengas4raw = writable('0');
+
 export const suhuUdara = writable(0);
 export const kelembabanUdara = writable(0);
 export const sensorFlowPestisida = writable(0);
@@ -42,6 +50,8 @@ export const biopest_status = writable(false)
 export const volumeSemprotBiopest = writable(0)
 export const jadwalBiopest=writable(" ")
 export const newJadwalBiopest = writable(false)
+export const kalibrasiBiopest = writable(10)
+export const kalibrasiAirBiopest = writable(10)
 
 //pestisida
 export const dosisAirPestisida = writable(1)
@@ -52,6 +62,8 @@ export const lahan3Pestisida_status = writable(false)
 export const lahan4Pestisida_status = writable(false)
 export const pestisida_status = writable(false)
 export const volumeSemprotPestisida = writable(0)
+export const kalibrasiPestisida = writable(10)
+export const kalibrasiAirPestisida = writable(10)
 export const jadwalPestisida =writable(" ")
 export const newJadwalPestisida = writable(false)
 
@@ -99,3 +111,6 @@ export function resetAllValue() {
     volumeSemprotPestisida.set(0)
 
 }
+
+export const kontrolIDStore = persisted("kontrolID","SP0000");
+export const clientIDStore = persisted("clientID","CL0000");

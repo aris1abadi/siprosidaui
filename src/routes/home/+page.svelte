@@ -7,9 +7,11 @@
 		lengas1,
 		resetAllValue,
 		demoMode,
-		conect_status
+		conect_status,
+		kontrolIDStore
 	} from '$lib/store/stores';
 	import { onMount } from 'svelte';
+	import { get } from 'svelte/store';
 
 	let sts_count = 0;
 
@@ -40,9 +42,10 @@
 
 <div class="h-screen w-screen bg-zinc-800">
 	<div class="mainbg h-full w-full max-w-md mx-auto flex flex-col">
-		<div>
+		<div class="w-full h-16">
 			<img src="/hd_home.png" alt="hd_home" />
 		</div>
+		<div class="text-xs w-full text-center mt-4">{get(kontrolIDStore)}</div>
 		<div class="w-full h-4 grid justify-items-center my-2">
 			{#if $demoMode}
 				<div class="text-center text-xs bg-red-500 text-white w-12 h-4"><small>Demo</small></div>
@@ -151,20 +154,95 @@
 			<div class="col-span-1"></div>
 		</div>
 
-		<div class="grid grid-cols-5 w-full h-12 justify-items-center mt-16">
-			<button on:click={() => goto('/')}>
-				<img class="h-8 w-8" src="/logout.png" alt="log out" />
-				<div>Logout</div>
-			</button>
-			<div class="col-span-3"></div>
-			{#if !$demoMode}
-			<button on:click={() => goto('/tes')}>
-				<img class="h-8 w-8" src="/setup.png" alt="setup" />
-				<div>Setup</div>
-			</button>
-			{/if}
+		<!--menu-->
+		<details class="dropdown w-full pr-4 mt-36 dropdown-top dropdown-end">
+			<summary class="flex justify-end"
+				><svg
+					fill="#000000"
+					class="w-8 h-8"
+					version="1.1"
+					xmlns="http://www.w3.org/2000/svg"
+					xmlns:xlink="http://www.w3.org/1999/xlink"
+					viewBox="-5.6 -5.6 67.20 67.20"
+					xml:space="preserve"
+					stroke="#000000"
+					stroke-width="0.00056"
+					><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g
+						id="SVGRepo_tracerCarrier"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke="#CCCCCC"
+						stroke-width="7.839999999999999"
+					>
+						<path
+							d="M28,0C12.561,0,0,12.561,0,28s12.561,28,28,28s28-12.561,28-28S43.439,0,28,0z M40,41H16c-1.104,0-2-0.896-2-2s0.896-2,2-2 h24c1.104,0,2,0.896,2,2S41.104,41,40,41z M40,30H16c-1.104,0-2-0.896-2-2s0.896-2,2-2h24c1.104,0,2,0.896,2,2S41.104,30,40,30z M40,19H16c-1.104,0-2-0.896-2-2s0.896-2,2-2h24c1.104,0,2,0.896,2,2S41.104,19,40,19z"
+						></path>
+					</g><g id="SVGRepo_iconCarrier">
+						<path
+							d="M28,0C12.561,0,0,12.561,0,28s12.561,28,28,28s28-12.561,28-28S43.439,0,28,0z M40,41H16c-1.104,0-2-0.896-2-2s0.896-2,2-2 h24c1.104,0,2,0.896,2,2S41.104,41,40,41z M40,30H16c-1.104,0-2-0.896-2-2s0.896-2,2-2h24c1.104,0,2,0.896,2,2S41.104,30,40,30z M40,19H16c-1.104,0-2-0.896-2-2s0.896-2,2-2h24c1.104,0,2,0.896,2,2S41.104,19,40,19z"
+						></path>
+					</g></svg
+				>
+			</summary>
 
-		</div>
+			<ul class="w-1/2 mr-8 dropdown-content z-[1] rounded shadow-lg border">
+				<li>
+					<a href="/home" class="grid grid-cols-4 bg-gray-200 p-2"
+						><img class="w-8 h-8" src="/btn_home2.png" alt="home" />
+						<div class="col-span-3 p-1">Home</div></a
+					>
+				</li>
+				<li>
+					<a href="/siram" class="grid grid-cols-4 bg-white p-2"
+						><img class="w-8 h-8" src="/penyiraman.png" alt="siram" />
+						<div class="col-span-3 p-1">Siram</div></a
+					>
+				</li>
+				<li>
+					<a href="/pestisida" class="grid grid-cols-4 bg-gray-200 p-2"
+						><img class="w-8 h-8" src="/pestisida.png" alt="pest" />
+						<div class="col-span-3 p-1">Pestisida</div></a
+					>
+				</li>
+				<li>
+					<a href="/biopest" class="grid grid-cols-4 bg-white p-2"
+						><img class="w-8 h-8" src="/biopestisida.png" alt="biopest" />
+						<div class="col-span-3 p-1">Biopestisida</div></a
+					>
+				</li>
+				<li>
+					<a href="/setup" class="grid grid-cols-4 bg-gray-200 p-2"
+						><img class="w-8 h-8" src="/setup.png" alt="home" />
+						<div class="col-span-3 p-1">Setup</div></a
+					>
+				</li>
+				<li>
+					<a href="/" class="grid grid-cols-4 bg-white p-2"
+						><svg
+							fill="#000000"
+							class="w-6 h-6"
+							version="1.1"
+							id="Layer_1"
+							xmlns="http://www.w3.org/2000/svg"
+							xmlns:xlink="http://www.w3.org/1999/xlink"
+							viewBox="0 0 512 512"
+							enable-background="new 0 0 512 512"
+							xml:space="preserve"
+							><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g
+								id="SVGRepo_tracerCarrier"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							></g><g id="SVGRepo_iconCarrier">
+								<path
+									d="M469.3,469.3H42.7V42.7H256L298.7,0h-256C19.1,0,0,19.1,0,42.7v426.7C0,492.9,19.1,512,42.7,512h426.7 c23.6,0,42.7-19.1,42.7-42.7V320l-42.7,42.7V469.3z M85.3,426.7C149.1,255.7,234.7,256,362.7,256v85.3L512,192L362.7,42.7V128 C85.3,128,85.1,341.1,85.3,426.7z"
+								></path>
+							</g></svg
+						>
+						<div class="col-span-3 p-1">Keluar</div></a
+					>
+				</li>
+			</ul>
+		</details>
 	</div>
 </div>
 

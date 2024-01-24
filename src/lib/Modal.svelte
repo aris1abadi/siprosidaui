@@ -1,9 +1,21 @@
 <script>
 	export let showModal; // boolean
+	export let timeOut = 2;
 
 	let dialog; // HTMLDialogElement
 
-	$: if (dialog && showModal) dialog.showModal();
+	//$: if (dialog && showModal)dialog.showModal();
+
+	$: if (dialog && showModal) {
+		dialog.showModal();
+		if(timeOut != 0)
+			setTimeout(() =>{
+				dialog.close()
+				showModal = false;
+			},(timeOut * 1000))
+		
+	};
+	
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
@@ -25,7 +37,7 @@
 
 <style>
 	dialog {
-		max-width: 32em;
+		max-width: 24em;
 		border-radius: 0.2em;
 		border: none;
 		padding: 0;
@@ -37,11 +49,11 @@
 		padding: 1em;
 	}
 	dialog[open] {
-		animation: zoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+		animation: zoom 1.0s cubic-bezier(0.34, 1.56, 0.64, 1);
 	}
 	@keyframes zoom {
 		from {
-			transform: scale(0.95);
+			transform: scale(0.5);
 		}
 		to {
 			transform: scale(1);

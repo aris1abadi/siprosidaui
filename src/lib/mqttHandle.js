@@ -4,6 +4,10 @@ import {
   lengas2,
   lengas3,
   lengas4,
+  lengas1raw,
+  lengas2raw,
+  lengas3raw,
+  lengas4raw,
   suhuUdara,
   kelembabanUdara,
   lahan1_status,
@@ -39,8 +43,18 @@ import {
   dosisAirBiopest,
   jadwalBiopest,
   newJadwalBiopest,
-  siramCount
+  siramCount,
+  kontrolIDStore,
+  kalibrasiPestisida,
+  kalibrasiAirPestisida,
+  kalibrasiBiopest,
+  kalibrasiAirBiopest
 } from './store/stores';
+
+import { get } from 'svelte/store'
+
+//import {machineId, machineIdSync} from 'node-machine-id';
+//import machineId from 'machine-id';
 
 
 
@@ -61,10 +75,12 @@ import { onMount } from 'svelte';
  * EMQX's default port for mqtt connections is 1883, while for mqtts it is 8883.
  */
 
-const kontrolID = "SP5578"
+//const kontrolID = "SP5578"
 
-const subMqtt = "bsip-out/" + kontrolID + "/#"
-const pubMqtt = "bsip-in/" + kontrolID + "/"
+//const subMqtt = "bsip-out/" + kontrolID + "/#"
+//const pubMqtt = "bsip-in/" + kontrolID + "/"
+const subMqtt = "bsip-out/" + get(kontrolIDStore) + "/#"
+const pubMqtt = "bsip-in/" + get(kontrolIDStore) + "/"
 const clientId = 'siprosida_' + Math.random().toString(16).substr(2, 8)
 //const host = 'ws://abadinet.my.id:2020'
 const host = 'wss://node-red.balingtansmart.my.id/ws'
@@ -94,7 +110,7 @@ client.on('error', (err) => {
   console.log(err)
   client.end()
 })
-client.on('disconnect',() =>{
+client.on('disconnect', () => {
   mqttStatus.set(0);
   console.log('client disconect')
 })
@@ -104,8 +120,12 @@ client.on('connect', () => {
   mqttStatus.set(1);
   client.subscribe(subMqtt, { qos: 0 })
   let pubStatus = pubMqtt + "kontrol/0/status"
-  client.publish(pubStatus, 'siprosida ui 2003 reconect', { qos: 0, retain: false })
-  kirimMsg("kontrol",0,"getAllStatus","1")
+
+  //let id = machineIdSync()
+  //let id_short = id.substring(id.length - 4,id.length)
+
+  client.publish(pubStatus, 'siprosida ui reconect', { qos: 0, retain: false })
+  kirimMsg("kontrol", 0, "getAllStatus", "1")
 })
 
 client.on('message', (topic, message, packet) => {
@@ -126,6 +146,17 @@ client.on('message', (topic, message, packet) => {
       } else if (topicMqtt[3] === '4') {
         lengas4.set(parseInt(String(message)))
       }
+    } else if (topicMqtt[4] === 'rawvalue') {
+      if (topicMqtt[3] === '1') {
+        lengas1raw.set(String(message))
+        //$lengas1 = String(message)      
+      } else if (topicMqtt[3] === '2') {
+        lengas2raw.set(String(message))
+      } else if (topicMqtt[3] === '3') {
+        lengas3raw.set(String(message))
+      } else if (topicMqtt[3] === '4') {
+        lengas4raw.set(String(message))
+      }
     }
   } else if (topicMqtt[2] === "sensorDHT") {
     if (topicMqtt[4] === "temp") {
@@ -139,7 +170,7 @@ client.on('message', (topic, message, packet) => {
       volumeAir.set(String(message))
     }
 
-  }else if (topicMqtt[2] === "siram") {
+  } else if (topicMqtt[2] === "siram") {
     if (topicMqtt[4] === "status") {
       switch (String(topicMqtt[3])) {
         case '0':
@@ -193,52 +224,60 @@ client.on('message', (topic, message, packet) => {
           }
           break;
       }
-    } else if (topicMqtt[4] === "infoAmbang") {      
+    } else if (topicMqtt[4] === "ambangLengas") {
       ambangLengas.set(parseInt(String(message)))
-    }else if (topicMqtt[4] === "useLengas") {
-      if(String(message) === '1'){
+    } else if (topicMqtt[4] === "useLengas") {
+      if (String(message) === '1') {
         useLengas.set(true);
-      }else{
+      } else {
         useLengas.set(false);
       }
-    }else if(topicMqtt[4] === "jadwalSiram") {
+    } else if (topicMqtt[4] === "jadwalSiram") {
       jadwalSiram.set(String(message))
       newJadwalSiram.set(true);
-    }else if(topicMqtt[4] === "durasiSiram"){
+    } else if (topicMqtt[4] === "durasiSiram") {
       durasiManual.set(parseInt(String(message)))
-    }else if(topicMqtt[4] === "siramStatus"){
-      let sts = (String(message)).split(',');
-      if(sts[0] === '1'){
+    } else if (topicMqtt[4] === "siramStatus") {
+      let p_sts = (String(message)).split(';');
+      let sts = p_sts[0].split(',');
+      if (sts[0] === '1') {
         siram_status.set(true);
-      }else{
+      } else {
         siram_status.set(false);
         runMode.set(0)
       }
-      if(sts[1] === "1"){
+      if (sts[1] === "1") {
         lahan1_status.set(true)
-      }else{
+      } else {
         lahan1_status.set(false)
       }
 
-      if(sts[2] === "1"){
+      if (sts[2] === "1") {
         lahan2_status.set(true)
-      }else{
+      } else {
         lahan2_status.set(false)
       }
 
-      if(sts[3] === "1"){
+      if (sts[3] === "1") {
         lahan3_status.set(true)
-      }else{
+      } else {
         lahan3_status.set(false)
       }
 
-      if(sts[4] === "1"){
+      if (sts[4] === "1") {
         lahan4_status.set(true)
-      }else{
+      } else {
         lahan4_status.set(false)
       }
 
-    }else if(topicMqtt[4] === "siramCount"){
+      durasiManual.set(parseInt(sts[5]))
+      ambangLengas.set(parseInt(sts[6]))
+      //jadwal petisida
+      let jw = p_sts[1] + ';' + p_sts[2] + ';' + p_sts[3] + ';' + p_sts[4] + ';' + p_sts[5] + ';'
+      jadwalSiram.set(jw);
+      newJadwalSiram.set(true)
+
+    } else if (topicMqtt[4] === "siramCount") {
       let sc = (message.toString()).split('-');
       siramCount.set(sc[0])
       volumeAir.set(sc[1])
@@ -294,48 +333,70 @@ client.on('message', (topic, message, packet) => {
           }
           break;
       }
-    }else if(topicMqtt[4] === "jadwalPestisida"){
+    } else if (topicMqtt[4] === "jadwalPestisida") {
+      //console.log("recv jadwal pestisida: \n" + message)
       jadwalPestisida.set(String(message))
       newJadwalPestisida.set(true)
-    }else if(topicMqtt[4] === "pestisidaStatus"){
-      const p_sts = (String(message)).split(';') 
+      //jadwalPestisida.subscribe((value) =>{
+      //  console.log("recv new jadwal pestisida: \n" + value)
+      //})
+    } else if (topicMqtt[4] === "pestisidaStatus") {
+      const p_sts = (String(message)).split(';')
       //status
       let sts = p_sts[0].split(',');
-      if(sts[0] === '1'){
+      if (sts[0] === '1') {
         pestisida_status.set(true);
-      }else{
+      } else {
         pestisida_status.set(false);
         runMode.set(0)
       }
-      if(sts[1] === "1"){
+      if (sts[1] === "1") {
         lahan1Pestisida_status.set(true)
-      }else{
+      } else {
         lahan1Pestisida_status.set(false)
       }
-      if(sts[2] === "1"){
+      if (sts[2] === "1") {
         lahan2Pestisida_status.set(true)
-      }else{
+      } else {
         lahan2Pestisida_status.set(false)
       }
-      if(sts[3] === "1"){
+      if (sts[3] === "1") {
         lahan3Pestisida_status.set(true)
-      }else{
+      } else {
         lahan3Pestisida_status.set(false)
       }
-      if(sts[4] === "1"){
+      if (sts[4] === "1") {
         lahan4Pestisida_status.set(true)
-      }else{
+      } else {
         lahan4Pestisida_status.set(false)
       }
+
       dosisPestisida.set(parseInt(sts[5]));
       dosisAirPestisida.set(parseInt(sts[6]));
+      kalibrasiPestisida.set(parseInt(sts[7]))
+      kalibrasiAirPestisida.set(parseInt(sts[8]))
 
       //jadwal petisida
-      let jw = p_sts[1] + ';' + p_sts[2] + ';' + p_sts[3] + ';'
+      let jw = p_sts[1] + ';' + p_sts[2] + ';' + p_sts[3] + ';' + p_sts[4] + ';' + p_sts[5] + ';'
       jadwalPestisida.set(jw);
-      newJadwalPestisida.set(true)      
+      newJadwalPestisida.set(true)
+
+    } else if (topicMqtt[4] === "dosisPestisida") {
+      dosisPestisida.set(parseInt(String(message)))
+    } else if (topicMqtt[4] === "dosisAirPestisida") {
+      dosisAirPestisida.set(parseInt(String(message)))
+    } else if (topicMqtt[4] === "kalibrasi") {
+      kalibrasiPestisida.set(parseInt(String(message)))
+    } else if (topicMqtt[4] === "kalibrasiAir") {
+      kalibrasiAirPestisida.set(parseInt(String(message)))
+    }
+    else if (topicMqtt[4] === "kalibrasiValue") {
+      let kal = String(message).split(',')
+      kalibrasiPestisida.set(parseInt(kal[0]))
+      kalibrasiAirPestisida.set(parseInt(kal[1]))
 
     }
+
 
   } else if (topicMqtt[2] === "biopest") {
     if (topicMqtt[4] === "status") {
@@ -387,149 +448,163 @@ client.on('message', (topic, message, packet) => {
           }
           break;
       }
-    }else if(topicMqtt[4] === "jadwalBiopest"){
+    } else if (topicMqtt[4] === "jadwalBiopest") {
       jadwalBiopest.set(String(message))
       newJadwalBiopest.set(true)
-    }else if(topicMqtt[4] === "biopestStatus"){
-      const p_sts = (String(message)).split(';') 
+    } else if (topicMqtt[4] === "biopestStatus") {
+      const p_sts = (String(message)).split(';')
       //status
       let sts = p_sts[0].split(',');
-      if(sts[0] === '1'){
+      if (sts[0] === '1') {
         biopest_status.set(true);
-      }else{
+      } else {
         biopest_status.set(false);
         runMode.set(0)
       }
-      if(sts[1] === "1"){
+      if (sts[1] === "1") {
         lahan1Biopest_status.set(true)
-      }else{
+      } else {
         lahan1Biopest_status.set(false)
       }
-      if(sts[2] === "1"){
+      if (sts[2] === "1") {
         lahan2Biopest_status.set(true)
-      }else{
+      } else {
         lahan2Biopest_status.set(false)
       }
-      if(sts[3] === "1"){
+      if (sts[3] === "1") {
         lahan3Biopest_status.set(true)
-      }else{
+      } else {
         lahan3Biopest_status.set(false)
       }
-      if(sts[4] === "1"){
+      if (sts[4] === "1") {
         lahan4Biopest_status.set(true)
-      }else{
+      } else {
         lahan4Biopest_status.set(false)
       }
       dosisBiopest.set(parseInt(sts[5]));
       dosisAirBiopest.set(parseInt(sts[6]));
+      kalibrasiBiopest.set(parseInt(sts[7]))
+      kalibrasiAirBiopest.set(parseInt(sts[8]))
 
       //jadwal petisida
-      let jw = p_sts[1] + ';' + p_sts[2] + ';' + p_sts[3] + ';'
+      let jw = p_sts[1] + ';' + p_sts[2] + ';' + p_sts[3] + ';' + p_sts[4] + ';' + p_sts[5] + ';'
       jadwalBiopest.set(jw);
-      newJadwalBiopest.set(true)      
+      newJadwalBiopest.set(true)
+
+    } else if (topicMqtt[4] === "dosisBiopest") {
+      dosisBiopest.set(parseInt(String(message)))
+    } else if (topicMqtt[4] === "dosisAirBiopest") {
+      dosisAirBiopest.set(parseInt(String(message)))
+    } else if (topicMqtt[4] === "kalibrasi") {
+      kalibrasiBiopest.set(parseInt(String(message)))
+    } else if (topicMqtt[4] === "kalibrasiAir") {
+      kalibrasiAirBiopest.set(parseInt(String(message)))
+    } else if (topicMqtt[4] === "kalibrasiValue") {
+      let kal = String(message).split(',')
+      kalibrasiBiopest.set(parseInt(kal[0]))
+      kalibrasiAirBiopest.set(parseInt(kal[1]))
 
     }
 
-  }else if(topicMqtt[2] === "kontrol"){
-    if(topicMqtt[4] === "allStatus"){
-      let sts = (String(message)).split(',');   
+  } else if (topicMqtt[2] === "kontrol") {
+    if (topicMqtt[4] === "allStatus") {
+      let sts = (String(message)).split(',');
       //console.log("all status load")
       runMode.set(parseInt(sts[0]))
-      switch(parseInt(sts[0])){
+      switch (parseInt(sts[0])) {
         case 0:
           //mode stanby reset semua status selenoid
           resetAllValue()
-        break;
+          break;
         case 1:
           //mode siram berjalan
           siram_status.set(true)
-          if(sts[1] === '1'){//selenoid siram 1
+          if (sts[1] === '1') {//selenoid siram 1
             lahan1_status.set(true)
-          }else{
+          } else {
             lahan1_status.set(false)
           }
 
-          if(sts[2] === '1'){//selenoid siram 1
+          if (sts[2] === '1') {//selenoid siram 1
             lahan2_status.set(true)
-          }else{
+          } else {
             lahan2_status.set(false)
           }
 
-          if(sts[3] === '1'){//selenoid siram 1
+          if (sts[3] === '1') {//selenoid siram 1
             lahan3_status.set(true)
-          }else{
+          } else {
             lahan3_status.set(false)
           }
 
-          if(sts[4] === '1'){//selenoid siram 1
+          if (sts[4] === '1') {//selenoid siram 1
             lahan4_status.set(true)
-          }else{
+          } else {
             lahan4_status.set(false)
           }
-        break;
+          break;
         case 2:
           pestisida_status.set(true)
-          if(sts[1] === '1'){//selenoid pestisida 1
+          if (sts[1] === '1') {//selenoid pestisida 1
             lahan1Pestisida_status.set(true)
-          }else{
+          } else {
             lahan1Pestisida_status.set(false)
           }
 
-          if(sts[2] === '1'){//selenoid pestisida 1
+          if (sts[2] === '1') {//selenoid pestisida 1
             lahan2Pestisida_status.set(true)
-          }else{
+          } else {
             lahan2Pestisida_status.set(false)
           }
 
-          if(sts[3] === '1'){//selenoid pestisida 1
+          if (sts[3] === '1') {//selenoid pestisida 1
             lahan3Pestisida_status.set(true)
-          }else{
+          } else {
             lahan3Pestisida_status.set(false)
           }
 
-          if(sts[4] === '1'){//selenoid pestisida 1
+          if (sts[4] === '1') {//selenoid pestisida 1
             lahan4Pestisida_status.set(true)
-          }else{
+          } else {
             lahan4Pestisida_status.set(false)
           }
-        break;
+          break;
 
         case 3:
           biopest_status.set(true)
-          if(sts[1] === '1'){//selenoid pestisida 1
+          if (sts[1] === '1') {//selenoid pestisida 1
             lahan1Biopest_status.set(true)
-          }else{
+          } else {
             lahan1Biopest_status.set(false)
           }
 
-          if(sts[2] === '1'){//selenoid pestisida 1
+          if (sts[2] === '1') {//selenoid pestisida 1
             lahan2Biopest_status.set(true)
-          }else{
+          } else {
             lahan2Biopest_status.set(false)
           }
 
-          if(sts[3] === '1'){//selenoid pestisida 1
+          if (sts[3] === '1') {//selenoid pestisida 1
             lahan3Biopest_status.set(true)
-          }else{
+          } else {
             lahan3Biopest_status.set(false)
           }
 
-          if(sts[4] === '1'){//selenoid pestisida 1
+          if (sts[4] === '1') {//selenoid pestisida 1
             lahan4Biopest_status.set(true)
-          }else{
+          } else {
             lahan4Biopest_status.set(false)
           }
-        break;
+          break;
       }
-      
-    }else if(topicMqtt[4] === "heartBeat"){
+
+    } else if (topicMqtt[4] === "heartBeat") {
       conect_status.set(true);
       sts_count = 0;
       //console.log("online")
-    }else if(topicMqtt[4] === "siramCount"){
-      let sc = (message.toString()).split('-');
-      siramCount.set(sc[0])
-      volumeAir.set(sc[1])
+    }else if (topicMqtt[4] === "loginStatus"){
+      //format status loginstatus(0/1),-/username,clientID(jika login dari perangkat baru)
+
     }
   }
 })

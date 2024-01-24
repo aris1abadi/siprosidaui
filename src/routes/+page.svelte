@@ -6,14 +6,17 @@
 
 	*/
 	import { goto } from '$app/navigation';
-	import { resetAllValue, firtLoad, demoMode, conect_status } from '$lib/store/stores';
+	import { resetAllValue, firtLoad, demoMode, conect_status, kontrolIDStore  } from '$lib/store/stores';
 	import { onMount } from 'svelte';
 	import Modal from '$lib/Modal.svelte';
+	import { get } from 'svelte/store';
+	import { kirimMsg } from '$lib/mqttHandle';
 	let sts_count = 0;
 
 	onMount(() => {
 		resetAllValue();
 		conect_status.set(false);
+
 		
 	});
 	let myPassword = '';
@@ -21,18 +24,19 @@
 	
 
 	function startSiprosida() {
-		firtLoad.set(false);
-		demoMode.set(false);
-		
+		$firtLoad = false;
 		if (myPassword === 'bsip123') {
+			$demoMode = false;
+			kirimMsg('kontrol',0,'login',myPassword);
 			goto('/home');
 		} else {
 			showModal = true;
+			setTimeout(() => {showModal = false},2000);
 		}
 	}
 	function startDemo() {
-		firtLoad.set(false);
-		demoMode.set(true);
+		$firtLoad = false;
+		$demoMode = true;
 		goto('/home');
 	}
 </script>
@@ -44,7 +48,7 @@
 
 			<div class="w-3/4 h-32 bg-white rounded-lg mt-20 grid justify-items-center">
 				<input
-					type="text"
+					type="password"
 					placeholder="Tulis Passwordmu "
 					bind:value={myPassword}
 					class="input input-bordered input-secondary w-3/4 h-10 max-w-xs mt-4"
@@ -67,7 +71,9 @@
 				</div>
 			</div>
 		</div>
+		<div class="text-xs w-full text-center mt-4">{get(kontrolIDStore)}</div>
 	</div>
+	
 </div>
 <Modal bind:showModal>
 	<div class="text-lg text-red-800 text-center">Password kamu salah</div>
