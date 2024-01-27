@@ -3,22 +3,37 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
+		"sw-dev": "vite dev",
 		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
+		"dev-generate": "GENERATE_SW=true vite dev",
+		"dev-generate-suppress-w": "GENERATE_SW=true SUPPRESS_WARNING=true vite dev",
+		"build-generate-sw": "GENERATE_SW=true vite build",
+		"build-generate-sw-node": "NODE_ADAPTER=true GENERATE_SW=true vite build",
+		"build-inject-manifest": "vite build",
+		"build-inject-manifest-node": "NODE_ADAPTER=true vite build",
+		"build-self-destroying": "SELF_DESTROYING_SW=true vite build",
+		"preview": "vite preview --port=4173",
+		"preview-node": "PORT=4173 node build",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
-		"test": "npm run test:integration && npm run test:unit",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"test:integration": "playwright test",
-		"test:unit": "vitest"
+		"test:unit": "vitest",
+		"test-generate-sw": "nr build-generate-sw && GENERATE_SW=true vitest run && GENERATE_SW=true playwright test",
+		"test-generate-sw-node": "nr build-generate-sw-node && NODE_ADAPTER=true GENERATE_SW=true vitest run && NODE_ADAPTER=true GENERATE_SW=true playwright test",
+		"test-inject-manifest": "nr build-inject-manifest && vitest run && playwright test",
+		"test-inject-manifest-node": "nr build-inject-manifest-node && NODE_ADAPTER=true vitest run && NODE_ADAPTER=true playwright test",
+		"test": "npm run test-generate-sw && npm run test-generate-sw-node && npm run test-inject-manifest && npm run test-inject-manifest-node"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.28.1",
 		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/adapter-node": "^1.3.1",
 		"@sveltejs/kit": "^1.27.4",
+		"@types/cookie": "^0.6.0",
+		"@types/web-bluetooth": "^0.0.20",
+		"@vite-pwa/sveltekit": "^0.3.0",
 		"autoprefixer": "^10.4.16",
 		"daisyui": "^4.4.19",
 		"eslint": "^8.28.0",
@@ -32,14 +47,17 @@
 		"tailwindcss": "^3.3.6",
 		"typescript": "^5.0.0",
 		"vite": "^4.4.2",
+		"vite-plugin-pwa": "^0.17.4",
 		"vitest": "^0.32.2"
 	},
 	"type": "module",
 	"dependencies": {
+		"bluetooth-terminal": "^1.4.2",
 		"mqtt": "^5.3.3",
 		"svelte-notifications": "^0.9.98",
 		"svelte-persisted-store": "^0.9.0",
 		"svelte-time-picker": "^2.0.0",
-		"svelty-picker": "^5.2.0"
+		"svelty-picker": "^5.2.0",
+		"web-bluetooth": "^0.1.2"
 	}
 }
