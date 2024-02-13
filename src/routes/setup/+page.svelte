@@ -71,6 +71,9 @@
 	let kal_lengas3 = false;
 	let kal_lengas4 = false;
 
+	let suhuTanah = '-';
+	let files;
+
 	onMount(() => {
 		resetAllValue();
 		getAllStatus();
@@ -414,7 +417,39 @@
 		alertType = 2;
 	}
 
-	let suhuTanah = '-';
+	let responseMessage = '';
+
+	async function handleSubmit() {
+		const formData = new FormData();
+		formData.append('fileToUpload', files[0]);
+		formData.append('kontrolID', get(kontrolIDStore));
+
+		try {
+			const response = await fetch('/setup', {
+				method: 'POST',
+				body: formData
+			});
+
+			if (response.ok) {
+				//{type: 'success', status: 200, data: '[{"status":1,"success":2,"body":3},200,true,{"nama…ad/SP7652_firmware.bin","File berhasil disimpan"]'}
+				const result = await response.json();
+				const data = JSON.parse(result.data);
+				//console.log(result.data[0])
+				console.log(data[data[0].pesan]);
+				console.log(data[data[0].path]);
+			} else {
+				responseMessage = 'Gagal mengunggah file';
+			}
+		} catch (error) {
+			console.error('Error:', error);
+			responseMessage = 'Terjadi kesalahan saat mengunggah file';
+			console.log(responseMessage);
+		}
+	}
+
+	function handleFileChange(event) {
+		files = event.target.files;
+	}
 </script>
 
 <link
@@ -445,7 +480,6 @@
 		<div class="w-full p-2 mt-8">
 			<div role="tablist" class="tabs tabs-lifted">
 				<!--tab Kalibrasi-->
-
 				<input
 					type="radio"
 					name="my_tabs_2"
@@ -1016,9 +1050,8 @@
 				<!--tab admin-->
 				<input type="radio" name="my_tabs_2" role="tab" class="tab text-xs" aria-label="admin" />
 				<div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-2">
-					<div class=" w-full h-24 grid grid-cols-4 gap-2 bg-base-100 border">
-						<div class="col-span-4 text-center">KontrolID</div>
-						<div></div>
+					<div class=" w-full h-12 p-2 grid grid-cols-4 gap-2 bg-base-100 border">
+						<div class="text-center">KontrolID</div>
 						<input
 							class="w-full h-8 border border-black rounded text-center"
 							type="text"
@@ -1032,56 +1065,67 @@
 						>
 					</div>
 					{#if !$demoMode}
-						<div class="w-full border mt-4 p-4 grid justify-items-center">
-							<label class="form-control w-1/2 text-[10px]">
-								Nama User
-								<input
-									type="text"
-									bind:value={username}
-									placeholder="---"
-									class="border border-gray-400 rounded text-center text-xs w-full h-8"
-								/>
-							</label>
-							<label class="form-control w-1/2 text-[10px]">
-								Password
-								<input
-									type="text"
-									bind:value={password}
-									placeholder="---"
-									class="border border-gray-400 rounded text-center text-xs w-full h-8"
-								/>
-							</label>
+						<div class="w-full border mt-4 p-4 grid grid-cols-2 gap-4">
+							<div>
+								<label class="form-control w-full text-[10px]">
+									Nama User
+									<input
+										type="text"
+										bind:value={username}
+										placeholder="---"
+										class="border border-gray-400 rounded text-center text-xs w-full h-8"
+									/>
+								</label>
+								<label class="form-control w-full text-[10px]">
+									Password
+									<input
+										type="text"
+										bind:value={password}
+										placeholder="---"
+										class="border border-gray-400 rounded text-center text-xs w-full h-8"
+									/>
+								</label>
 
-							<label class="form-control w-1/2 text-[10px]">
-								Password baru
-								<input
-									type="text"
-									bind:value={newPassword1}
-									placeholder="---"
-									class="border border-gray-400 rounded text-center text-xs w-full h-8"
-								/>
-							</label>
-							<label class="form-control w-1/2 text-[10px]">
-								Password baru(ulang)
-								<input
-									type="text"
-									bind:value={newPassword2}
-									placeholder="---"
-									class="border border-gray-400 rounded text-center text-xs w-full h-8"
-								/>
-							</label>
-
-							<button class="border border-gray-400 rounded text-center text-xs w-1/2 h-8 mt-4"
-								>Simpan</button
-							>
+								<label class="form-control w-full text-[10px]">
+									Password baru
+									<input
+										type="text"
+										bind:value={newPassword1}
+										placeholder="---"
+										class="border border-gray-400 rounded text-center text-xs w-full h-8"
+									/>
+								</label>
+								<label class="form-control w-full text-[10px]">
+									Password baru(ulang)
+									<input
+										type="text"
+										bind:value={newPassword2}
+										placeholder="---"
+										class="border border-gray-400 rounded text-center text-xs w-full h-8"
+									/>
+								</label>
+								<button class="border border-gray-400 rounded text-center text-xs w-full h-8 mt-4"
+									>Simpan</button
+								>
+							</div>
 						</div>
 					{/if}
+					<div class="w-full border mt-4 p-4 grid justify-items-center">
+						<form on:submit|preventDefault={handleSubmit}>							
+							<input type="file" on:change={handleFileChange}  />
+							<button type="submit">Upload</button>
+						</form>
+
+						{#if responseMessage}
+							<p>{responseMessage}</p>
+						{/if}
+					</div>
 				</div>
 			</div>
 		</div>
 
 		<!--menu-->
-		<details class="dropdown w-full mt-32 pr-4 dropdown-top dropdown-end">
+		<details class="dropdown w-full mt-4 pr-4 dropdown-top dropdown-end">
 			<summary class="flex justify-end"
 				><svg
 					fill="#000000"
