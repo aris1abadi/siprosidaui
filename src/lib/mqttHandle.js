@@ -1,4 +1,5 @@
 import mqtt from 'mqtt'; // import namespace "mqtt"
+import { kirim_ble } from './bleHandle';
 import {
   lengas1,
   lengas2,
@@ -49,7 +50,8 @@ import {
   kalibrasiAirPestisida,
   kalibrasiBiopest,
   kalibrasiAirBiopest,
-  brokerUseStore
+  brokerUseStore,
+  clientIDStore
 } from './store/stores';
 
 import { get } from 'svelte/store'
@@ -80,9 +82,10 @@ import { onMount } from 'svelte';
  
 //const subMqtt = "bsip-out/" + kontrolID + "/#"
 //const pubMqtt = "bsip-in/" + kontrolID + "/"
+
 const subMqtt = "bsip-out/" + get(kontrolIDStore) + "/#"
 const pubMqtt = "bsip-in/" + get(kontrolIDStore) + "/"
-const clientId = 'siprosida_' + Math.random().toString(16).substr(2, 8)
+let clientId = '---'
 //const host = 'ws://abadinet.my.id:2020'
 //const host = 'wss://node-red.balingtansmart.my.id/ws'    
 const host = get(brokerUseStore)   
@@ -105,6 +108,18 @@ const options = {
   rejectUnauthorized: false
 }
 
+function cekClientId(){
+  const oldId = get(clientIDStore);
+  if(oldId !== '-'){
+    clientId = oldId
+  }else{
+    //bikin id baru
+    clientId = 'CL' + Math.random().toString(16).substr(2, 4).toUpperCase()
+    clientIDStore.set(clientId);
+
+  }
+}
+
 
 //console.log('connecting mqtt client')
 const client = mqtt.connect(host, options)
@@ -124,10 +139,9 @@ client.on('connect', () => {
   client.subscribe(subMqtt, { qos: 0 })
   let pubStatus = pubMqtt + "kontrol/0/status"
 
-  //let id = machineIdSync()
-  //let id_short = id.substring(id.length - 4,id.length)
+  cekClientId();
 
-  client.publish(pubStatus, 'siprosida ui reconect', { qos: 0, retain: false })
+  client.publish(pubStatus, clientId, { qos: 0, retain: false })
   kirimMsg("kontrol", 0, "getAllStatus", "1")
 })
 
@@ -628,6 +642,8 @@ client.on('close', () => {
 
 export function kirimMsg(type, num, cmd, msg) {
   let ms = pubMqtt + type + '/' + num + '/' + cmd
+  const bleMsg = ms + ';' + msg
+  kirim_ble(bleMsg)
   client.publish(ms, msg, { qos: 0, retain: false })
 }
 

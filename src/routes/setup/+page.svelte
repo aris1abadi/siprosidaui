@@ -24,6 +24,7 @@
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import Modal from '$lib/Modal.svelte';
+	import { ble_connect } from '$lib/bleHandle';
 
 	let sts_count = 0;
 	let pompaUtama_sts = false;
@@ -1146,6 +1147,15 @@
 							<p>{responseMessage}</p>
 						{/if}
 					</div>
+				</div>
+
+				<!-- tab ble-->
+				<input type="radio" name="my_tabs_2" role="tab" class="tab text-xs" aria-label="Bluethoot" />
+				<div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-2">
+					<button
+							on:click={() => ble_connect()}
+							class="w-full h-8 border bg-blue-500 rounded border-blue-900 text-white">connect </button
+						>
 				</div>
 			</div>
 		</div>
