@@ -1154,7 +1154,7 @@
 				<div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-2">
 					<button
 							on:click={() => ble_connect()}
-							class="w-full h-8 border bg-blue-500 rounded border-blue-900 text-white">connect </button
+							class="w-full h-8 border bg-blue-500 rounded border-blue-900 text-white">Sambung ke Bluethoot </button
 						>
 				</div>
 			</div>

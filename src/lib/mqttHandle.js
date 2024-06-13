@@ -1,5 +1,5 @@
 import mqtt from 'mqtt'; // import namespace "mqtt"
-import { kirim_ble } from './bleHandle';
+import { kirim_ble, ble_connected } from './bleHandle';
 import {
   lengas1,
   lengas2,
@@ -45,7 +45,7 @@ import {
   jadwalBiopest,
   newJadwalBiopest,
   siramCount,
-  kontrolIDStore,  
+  kontrolIDStore,
   kalibrasiPestisida,
   kalibrasiAirPestisida,
   kalibrasiBiopest,
@@ -79,7 +79,7 @@ import { onMount } from 'svelte';
  */
 
 //const kontrolID = "SP5578"
- 
+
 //const subMqtt = "bsip-out/" + kontrolID + "/#"
 //const pubMqtt = "bsip-in/" + kontrolID + "/"
 
@@ -88,7 +88,7 @@ const pubMqtt = "bsip-in/" + get(kontrolIDStore) + "/"
 let clientId = '---'
 //const host = 'ws://abadinet.my.id:2020'
 //const host = 'wss://node-red.balingtansmart.my.id/ws'    
-const host = get(brokerUseStore)   
+const host = get(brokerUseStore)
 let sts_count = 0;
 
 const options = {
@@ -108,11 +108,11 @@ const options = {
   rejectUnauthorized: false
 }
 
-function cekClientId(){
+function cekClientId() {
   const oldId = get(clientIDStore);
-  if(oldId !== '-'){
+  if (oldId !== '-') {
     clientId = oldId
-  }else{
+  } else {
     //bikin id baru
     clientId = 'CL' + Math.random().toString(16).substr(2, 4).toUpperCase()
     clientIDStore.set(clientId);
@@ -121,8 +121,12 @@ function cekClientId(){
 }
 
 
+
+
 //console.log('connecting mqtt client')
 const client = mqtt.connect(host, options)
+
+
 
 client.on('error', (err) => {
   console.log(err)
@@ -619,7 +623,7 @@ client.on('message', (topic, message, packet) => {
       conect_status.set(true);
       sts_count = 0;
       //console.log("online")
-    }else if (topicMqtt[4] === "loginStatus"){
+    } else if (topicMqtt[4] === "loginStatus") {
       //format status loginstatus(0/1),-/username,clientID(jika login dari perangkat baru)
 
     }
@@ -643,7 +647,10 @@ client.on('close', () => {
 export function kirimMsg(type, num, cmd, msg) {
   let ms = pubMqtt + type + '/' + num + '/' + cmd
   const bleMsg = ms + ';' + msg
-  kirim_ble(bleMsg)
-  client.publish(ms, msg, { qos: 0, retain: false })
+  if (ble_connected) {
+    kirim_ble(bleMsg)
+  } else {
+    client.publish(ms, msg, { qos: 0, retain: false })
+  }
 }
 
