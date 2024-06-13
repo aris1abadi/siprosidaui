@@ -10,6 +10,7 @@
 	var nusService;
 	var rxCharacteristic;
 	var txCharacteristic;
+	let sendCount = 0;
 
 	var connected = false;
 	let logDisplay = 'log console\n';
@@ -76,7 +77,7 @@
 				connected = true;
 				////window.term_.io.println('\r\n' + bleDevice.name + ' Connected.\n'
 				nusSendString('\r\n');
-				setConnButtonState(true);
+				//setConnButtonState(true);
 			})
 			.catch((error) => {
 				logDisplay += error;
@@ -142,6 +143,12 @@
 			}
 		});
 	}
+
+	function tes(){
+		let st = 'Tes ble ' + sendCount;
+		nusSendString(st)
+		sendCount++;
+	}
 </script>
 
 <div>
@@ -153,6 +160,7 @@
 				Connect
 			{/if}
 		</button>
+		<button class="w-1/4 h-8 border border-black mt-8" on:click={() => tes()}>tes</button>
 		<div class=" mt-4 w-11/12 h-64 container mx-auto overflow-auto border border-black">
 			{logDisplay}
 		</div>
