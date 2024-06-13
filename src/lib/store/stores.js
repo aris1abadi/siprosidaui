@@ -114,3 +114,4 @@ export function resetAllValue() {
 
 export const kontrolIDStore = persisted("kontrolID","SP0000");
 export const clientIDStore = persisted("clientID","CL0000");
+export const brokerUseStore = persisted("brokerUse","wss://mqtt.eclipseprojects.io/mqtt:443");//0= eclipse

@@ -18,7 +18,8 @@
 		kalibrasiPestisida,
 		kalibrasiAirPestisida,
 		kalibrasiBiopest,
-		kalibrasiAirBiopest
+		kalibrasiAirBiopest,
+		brokerUseStore
 	} from '$lib/store/stores';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
@@ -37,6 +38,7 @@
 	let selenoidOutletBiopest_sts = false;
 
 	let kontrolId_value = '';
+	let brokerUse_value = '';
 
 	let kalibrasiPestisida_value = 10;
 	let kalibrasiAirPestisida_value = 10;
@@ -111,6 +113,15 @@
 		} else {
 			kontrolIDStore.set(kontrolId_value);
 			alert('kontrolID ' + kontrolId_value + ' disimpan');
+		}
+	}
+
+	function simpanBroker() {
+		if (brokerUse_value === '') {
+			alert('Server tidak boleh kosong\n');
+		} else {
+			brokerUseStore.set(brokerUse_value);
+			alert('Server ' + brokerUse_value + ' disimpan');
 		}
 	}
 
@@ -1064,8 +1075,23 @@
 							class="w-full h-8 border bg-green-500 rounded border-green-900">Simpan</button
 						>
 					</div>
+
 					{#if !$demoMode}
-						<div class="w-full border mt-4 p-4 grid grid-cols-2 gap-4">
+						<div class=" w-full h-20 p-2 grid grid-cols-4 gap-2 bg-base-100 border mt-2">
+							<div class="text-left col-span-4">Server</div>
+							<input
+								class="w-full h-8 col-span-3 border border-black rounded text-center"
+								type="text"
+								placeholder={get(brokerUseStore)}
+								bind:value={brokerUse_value}
+							/>
+
+							<button
+								on:click={() => simpanBroker()}
+								class="w-full h-8 border bg-green-500 rounded border-green-900">Simpan</button
+							>
+						</div>
+						<div class="w-full border mt-2 p-4 grid grid-cols-2 gap-4">
 							<div>
 								<label class="form-control w-full text-[10px]">
 									Nama User
@@ -1111,8 +1137,8 @@
 						</div>
 					{/if}
 					<div class="w-full border mt-4 p-4 grid justify-items-center">
-						<form on:submit|preventDefault={handleSubmit}>							
-							<input type="file" on:change={handleFileChange}  />
+						<form on:submit|preventDefault={handleSubmit}>
+							<input type="file" on:change={handleFileChange} />
 							<button type="submit">Upload</button>
 						</form>
 

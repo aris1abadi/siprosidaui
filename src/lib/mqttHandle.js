@@ -44,11 +44,12 @@ import {
   jadwalBiopest,
   newJadwalBiopest,
   siramCount,
-  kontrolIDStore,
+  kontrolIDStore,  
   kalibrasiPestisida,
   kalibrasiAirPestisida,
   kalibrasiBiopest,
-  kalibrasiAirBiopest
+  kalibrasiAirBiopest,
+  brokerUseStore
 } from './store/stores';
 
 import { get } from 'svelte/store'
@@ -76,14 +77,15 @@ import { onMount } from 'svelte';
  */
 
 //const kontrolID = "SP5578"
-
+ 
 //const subMqtt = "bsip-out/" + kontrolID + "/#"
 //const pubMqtt = "bsip-in/" + kontrolID + "/"
 const subMqtt = "bsip-out/" + get(kontrolIDStore) + "/#"
 const pubMqtt = "bsip-in/" + get(kontrolIDStore) + "/"
 const clientId = 'siprosida_' + Math.random().toString(16).substr(2, 8)
 //const host = 'ws://abadinet.my.id:2020'
-const host = 'wss://node-red.balingtansmart.my.id/ws'
+//const host = 'wss://node-red.balingtansmart.my.id/ws'    
+const host = get(brokerUseStore)   
 let sts_count = 0;
 
 const options = {
@@ -102,6 +104,7 @@ const options = {
   },
   rejectUnauthorized: false
 }
+
 
 //console.log('connecting mqtt client')
 const client = mqtt.connect(host, options)
