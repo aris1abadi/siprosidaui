@@ -1160,10 +1160,11 @@
 					<button
 							on:click={() => ble_connect()}
 							class={ble_connected
-								? 'w-full h-8 border bg-blue-500 rounded border-blue-900 text-white'
-								: 'w-full h-8 border bg-blue-500 rounded border-blue-200 text-blue'}
+								?'w-full h-8 border bg-blue-100 rounded border-blue-200 text-blue'
+								:'w-full h-8 border bg-blue-900 rounded border-blue-900 text-white'
+								}
 							>
-							{#if ble_connected}
+							{#if ble_connected === false} 
 								Sambung ke Bluethoot 
 							{:else}
 								Putuskan Bluethoot

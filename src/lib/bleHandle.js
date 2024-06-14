@@ -84,7 +84,7 @@ async function ble_click() {
 			txCharacteristic.addEventListener('characteristicvaluechanged', handleNotifications);
 			ble_connected = true;
 			////window.term_.io.println('\r\n' + bleDevice.name + ' Connected.\n'
-			nusSendString('\r\n');
+			//nusSendString('\r\n');
 			//setConnButtonState(true);
 		})
 		.catch((error) => {

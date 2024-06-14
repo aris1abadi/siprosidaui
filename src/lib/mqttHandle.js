@@ -646,7 +646,7 @@ client.on('close', () => {
 
 export function kirimMsg(type, num, cmd, msg) {
   let ms = pubMqtt + type + '/' + num + '/' + cmd
-  const bleMsg = ms + ';' + msg
+  const bleMsg = ms + ';' + msg + '\n'
   if (ble_connected) {
     kirim_ble(bleMsg)
   } else {
