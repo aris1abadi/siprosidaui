@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { kirimMsg } from '$lib/mqttHandle';
+	import { ble_connected } from '$lib/bleHandle';
 	import {
 		lahan1Biopest_status,
 		lahan2Biopest_status,
@@ -107,7 +108,7 @@
 
 	function semprotBiopest(lahan) {
 		let msg = '0';
-		if ($conect_status) {
+		if (($conect_status) || (ble_connected)) {
 			if ($runMode === 0 || $runMode === 3) {
 				runMode.set(3);
 				if (lahan === 0) {
@@ -236,7 +237,7 @@
 
 	function simpanDosisAirBiopest() {
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				kirimMsg('biopest', 0, 'setDosisAirBiopest', String($dosisAirBiopest));
 			} else {
 				alertConect();
@@ -247,7 +248,7 @@
 	}
 	function simpanDosisBiopest() {
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				kirimMsg('biopest', 0, 'setDosisBiopest', String($dosisBiopest));
 			} else {
 				alertConect();
@@ -726,7 +727,7 @@
 
 	function kalibrasiStart() {
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				kirimMsg('biopest', 0, 'kalibrasi', String(faktorKalibrasi));
 			} else {
 				alertConect();
@@ -738,7 +739,7 @@
 
 	function kalibrasiAirStart() {
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				kirimMsg('biopest', 0, 'kalibrasiAir', String(faktorKalibrasiAir));
 			} else {
 				alertConect();
@@ -750,7 +751,7 @@
 
 	function simpanKalibrasi(val) {
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				kirimMsg('biopest', 0, 'simpanKalibrasi', String(val));
 			} else {
 				alertConect();
@@ -762,7 +763,7 @@
 
 	function simpanKalibrasiAir(val) {
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				kirimMsg('biopest', 0, 'simpanKalibrasiAir', String(val));
 			} else {
 				alertConect();
@@ -802,9 +803,9 @@
 		}
 	}
 
-	$: if($newJadwalBiopest == true){
-		loadJadwalBiopest()
-		newJadwalBiopest.set(false)
+	$: if ($newJadwalBiopest == true) {
+		loadJadwalBiopest();
+		newJadwalBiopest.set(false);
 	}
 </script>
 
@@ -816,6 +817,10 @@
 				{#if $demoMode}
 					<div class="text-center text-xs bg-red-500 text-white w-12 h-4">
 						<small>Demo</small>
+					</div>
+				{:else if ble_connected}
+					<div class="text-center text-xs bg-blue-900 text-white w-12 h-4">
+						<small>Bluethoot</small>
 					</div>
 				{:else if $conect_status}
 					<div class="text-center text-xs bg-green-500 text-white w-12 h-4">
@@ -897,13 +902,12 @@
 							</div>
 							<div class="grid justify-items-center">
 								<input
-									class="w-3/4  mt-2  mb-2 range range-xs range-success"
+									class="w-3/4 mt-2 mb-2 range range-xs range-success"
 									type="range"
 									bind:value={$dosisAirBiopest}
 									on:change={() => simpanDosisAirBiopest()}
 									min="1"
 									max="20"
-									
 								/>
 							</div>
 						</label>
@@ -913,7 +917,7 @@
 							</div>
 							<div class="grid justify-items-center">
 								<input
-									class="w-3/4 mt-2  mb-2 range range-xs range-success"
+									class="w-3/4 mt-2 mb-2 range range-xs range-success"
 									type="range"
 									bind:value={$dosisBiopest}
 									on:change={() => simpanDosisBiopest()}

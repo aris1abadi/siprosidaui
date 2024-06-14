@@ -22,7 +22,15 @@ function connectionToggle() {
 	}
 }
 */
-export async function ble_connect() {
+
+export function ble_connect(){
+	if(ble_connected){
+		disconnect();
+	}else{
+		ble_click();
+	}
+}
+async function ble_click() {
 
 	if (!navigator.bluetooth) {
 		

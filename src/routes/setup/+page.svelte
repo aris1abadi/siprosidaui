@@ -1,6 +1,7 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { kirimMsg } from '$lib/mqttHandle';
+	
 	import {
 		resetAllValue,
 		demoMode,
@@ -24,7 +25,7 @@
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
 	import Modal from '$lib/Modal.svelte';
-	import { ble_connect } from '$lib/bleHandle';
+	import { ble_connect,ble_connected } from '$lib/bleHandle';
 
 	let sts_count = 0;
 	let pompaUtama_sts = false;
@@ -94,7 +95,7 @@
 
 	function selenoidLahan(lahan, val) {
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				if (val) {
 					kirimMsg('selenoid', lahan, 'lahan', '1');
 				} else {
@@ -128,7 +129,7 @@
 
 	function pompaTes(val) {
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				if (val === 1) {
 					if (pompaUtama_sts) {
 						//pompa utama
@@ -179,7 +180,7 @@
 
 	function selenoidTes(val) {
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				switch (val) {
 					case 1:
 						if (selenoidInletPestisida_sts) {
@@ -227,7 +228,7 @@
 
 	function kalibrasiPestisida_start() {
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				kirimMsg('pestisida', 0, 'kalibrasi', String($kalibrasiPestisida));
 			} else {
 				alertConect();
@@ -239,7 +240,7 @@
 
 	function kalibrasiAirPestisida_start() {
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				kirimMsg('pestisida', 0, 'kalibrasiAir', String($kalibrasiAirPestisida));
 			} else {
 				alertConect();
@@ -251,7 +252,7 @@
 
 	function simpanKalibrasi_pestisida() {
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				kirimMsg('pestisida', 0, 'simpanKalibrasi', String($kalibrasiPestisida));
 			} else {
 				alertConect();
@@ -263,7 +264,7 @@
 
 	function simpanKalibrasiAir_pestisida() {
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				kirimMsg('pestisida', 0, 'simpanKalibrasiAir', String($kalibrasiAirPestisida));
 			} else {
 				alertConect();
@@ -275,7 +276,7 @@
 
 	function kalibrasiBiopest_start() {
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				kirimMsg('biopest', 0, 'kalibrasi', String($kalibrasiBiopest));
 			} else {
 				alertConect();
@@ -287,7 +288,7 @@
 
 	function kalibrasiAirBiopest_start() {
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				kirimMsg('biopest', 0, 'kalibrasiAir', String($kalibrasiAirBiopest));
 			} else {
 				alertConect();
@@ -299,7 +300,7 @@
 
 	function simpanKalibrasi_biopest() {
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				kirimMsg('biopest', 0, 'simpanKalibrasi', String($kalibrasiBiopest));
 			} else {
 				alertConect();
@@ -311,7 +312,7 @@
 
 	function simpanKalibrasiAir_biopest() {
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				kirimMsg('biopest', 0, 'simpanKalibrasiAir', String($kalibrasiAirBiopest));
 			} else {
 				alertConect();
@@ -323,7 +324,7 @@
 
 	function kalibrasiLengas_start(lengas) {
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				switch (lengas) {
 					case 1:
 						if (kal_lengas1) {
@@ -375,7 +376,7 @@
 
 	function simpanKalibrasiLengas(lengas) {
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				switch (lengas) {
 					case 1:
 						kirimMsg('lengas', 1, 'set100', String(set100_1));
@@ -476,7 +477,11 @@
 			<div class="w-full h-4 grid justify-items-center mb-2">
 				{#if $demoMode}
 					<div class="text-center text-xs bg-red-500 text-white w-12 h-4"><small>Demo</small></div>
-				{:else if $conect_status}
+					{:else if ble_connected}
+					<div class="text-center text-xs bg-blue-900 text-white w-12 h-4">
+						<small>Bluethoot</small>
+					</div>
+					{:else if $conect_status}
 					<div class="text-center text-xs bg-green-500 text-white w-12 h-4">
 						<small>Online</small>
 					</div>
@@ -1154,7 +1159,17 @@
 				<div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-2">
 					<button
 							on:click={() => ble_connect()}
-							class="w-full h-8 border bg-blue-500 rounded border-blue-900 text-white">Sambung ke Bluethoot </button
+							class={ble_connected
+								? 'w-full h-8 border bg-blue-500 rounded border-blue-900 text-white'
+								: 'w-full h-8 border bg-blue-500 rounded border-blue-200 text-blue'}
+							>
+							{#if ble_connected}
+								Sambung ke Bluethoot 
+							{:else}
+								Putuskan Bluethoot
+							{/if}
+							
+							</button
 						>
 				</div>
 			</div>

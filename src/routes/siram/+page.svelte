@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { kirimMsg } from '$lib/mqttHandle';
+	import { ble_connected } from '$lib/bleHandle';
 	import {
 		lengas1,
 		lengas2,
@@ -76,15 +77,15 @@
 
 	let showModal = false;
 	let alertType = 0;
-	let timeOut = 0
+	let timeOut = 0;
 	let ambangLengas_local = 60;
 
 	onMount(() => {
 		resetAllValue();
 		if ($firtLoad) {
 			goto('/');
-		}		
-		
+		}
+
 		getAllStatus();
 		setTimeout(loadJadwalSiram, 1000);
 		setTimeout(getDurasiSiram, 2000);
@@ -99,12 +100,10 @@
 	function getDurasiSiram() {
 		kirimMsg('siram', 0, 'getDurasi', '0');
 	}
-	function loadJadwalSiram(){
+	function loadJadwalSiram() {
 		if ($jadwalSiram.length >= 200) {
 			//console.log('jadwal siram len: ' + $jadwalSiram.length);
 			loadJadwal();
-			
-			
 		} else {
 			//default Jadwal
 			console.log('load default jadwal');
@@ -117,7 +116,7 @@
 
 	function siramLahan(lahan) {
 		let lahanSts = '0';
-		if ($conect_status) {
+		if (($conect_status) || (ble_connected)) {
 			if ($runMode === 0 || $runMode === 1) {
 				$runMode = 1;
 				if (lahan == 0) {
@@ -211,40 +210,39 @@
 		showModal = true;
 		showMode = 3;
 		alertType = 1;
-		timeOut = 2
+		timeOut = 2;
 	}
 	function alertConect() {
 		showModal = true;
 		showMode = 3;
 		alertType = 2;
-		timeOut = 2
+		timeOut = 2;
 	}
 	function alertLahan() {
 		showModal = true;
 		showMode = 3;
 		alertType = 3;
-		timeOut = 2
+		timeOut = 2;
 	}
 	function alertHari() {
 		showModal = true;
 		showMode = 3;
 		alertType = 4;
-		timeOut = 2
+		timeOut = 2;
 	}
 	function alertSimpanJadwal() {
 		showModal = true;
 		showMode = 3;
 		alertType = 5;
-		timeOut = 2
+		timeOut = 2;
 	}
 
 	function alertShow(val) {
 		showModal = true;
 		showMode = val;
 		alertType = 0;
-		timeOut = 2
+		timeOut = 2;
 	}
-
 
 	function lahan1Click(idx) {
 		if (cekLahan1[idx]) {
@@ -331,7 +329,7 @@
 	function trigerLengasChange() {
 		//console.log('triger lengas: ' + $ambangLengas);
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				kirimMsg('siram', '0', 'setAmbang', String($ambangLengas));
 			} else {
 				alertConect();
@@ -742,12 +740,12 @@
 	function setDurasiClick() {
 		showModal = true;
 		showMode = 2;
-		timeOut = 0
+		timeOut = 0;
 	}
 
 	function simpanDurasi() {
 		if (!$demoMode) {
-			if ($conect_status) {
+			if (($conect_status) || (ble_connected)) {
 				kirimMsg('siram', 0, 'setDurasi', String($durasiManual));
 			} else {
 				alertConect();
@@ -761,7 +759,7 @@
 		showModal = true;
 		showMode = 1;
 		showjadwal = jadwal;
-		timeOut = 0
+		timeOut = 0;
 	}
 
 	function jadwalAktif(jadwal) {
@@ -786,9 +784,9 @@
 			}
 		}
 	}
-	$:if($newJadwalSiram == true){
-		loadJadwalSiram()
-		newJadwalSiram.set(false)
+	$: if ($newJadwalSiram == true) {
+		loadJadwalSiram();
+		newJadwalSiram.set(false);
 	}
 </script>
 
@@ -800,6 +798,10 @@
 				{#if $demoMode}
 					<div class="text-center text-xs bg-red-500 text-white w-12 h-4">
 						<small>Demo</small>
+					</div>
+				{:else if ble_connected}
+					<div class="text-center text-xs bg-blue-900 text-white w-12 h-4">
+						<small>Bluethoot</small>
 					</div>
 				{:else if $conect_status}
 					<div class="text-center text-xs bg-green-500 text-white w-12 h-4">
@@ -1563,7 +1565,7 @@
 			<div class="text-center w-full">Pilih Lahan</div>
 		{:else if alertType === 4}<!--Hari-->
 			<div class="text-center w-full">Pilih Hari</div>
-			{:else if alertType === 5}<!--Hari-->
+		{:else if alertType === 5}<!--Hari-->
 			<div class="text-center w-full">Jadwal Siram disimpan</div>
 		{/if}
 	{/if}

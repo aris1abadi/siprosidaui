@@ -1,6 +1,7 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { kirimMsg } from '$lib/mqttHandle';
+	import { ble_connected } from '$lib/bleHandle';
 	import {
 		suhuUdara,
 		kelembabanUdara,
@@ -49,7 +50,11 @@
 		<div class="w-full h-4 grid justify-items-center my-2">
 			{#if $demoMode}
 				<div class="text-center text-xs bg-red-500 text-white w-12 h-4"><small>Demo</small></div>
-			{:else if $conect_status}
+				{:else if ble_connected}
+				<div class="text-center text-xs bg-blue-900 text-white w-12 h-4">
+					<small>Bluethoot</small>
+				</div>
+				{:else if $conect_status}
 				<div class="text-center text-xs bg-green-500 text-white w-12 h-4">
 					<small>Online</small>
 				</div>
