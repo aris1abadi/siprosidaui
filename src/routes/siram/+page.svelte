@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { kirimMsg } from '$lib/mqttHandle';
-	import { ble_connected } from '$lib/bleHandle';
+	
 	import {
 		lengas1,
 		lengas2,
@@ -25,7 +25,8 @@
 		runMode,
 		conect_status,
 		siramCount,
-		kontrolIDStore
+		kontrolIDStore,
+		ble_connected
 	} from '$lib/store/stores';
 
 	import Modal from '$lib/Modal.svelte';
@@ -116,7 +117,7 @@
 
 	function siramLahan(lahan) {
 		let lahanSts = '0';
-		if (($conect_status) || (ble_connected)) {
+		if (($conect_status) || ($ble_connected)) {
 			if ($runMode === 0 || $runMode === 1) {
 				$runMode = 1;
 				if (lahan == 0) {
@@ -329,7 +330,7 @@
 	function trigerLengasChange() {
 		//console.log('triger lengas: ' + $ambangLengas);
 		if (!$demoMode) {
-			if (($conect_status) || (ble_connected)) {
+			if (($conect_status) || ($ble_connected)) {
 				kirimMsg('siram', '0', 'setAmbang', String($ambangLengas));
 			} else {
 				alertConect();
@@ -745,7 +746,7 @@
 
 	function simpanDurasi() {
 		if (!$demoMode) {
-			if (($conect_status) || (ble_connected)) {
+			if (($conect_status) || ($ble_connected)) {
 				kirimMsg('siram', 0, 'setDurasi', String($durasiManual));
 			} else {
 				alertConect();
@@ -799,7 +800,7 @@
 					<div class="text-center text-xs bg-red-500 text-white w-12 h-4">
 						<small>Demo</small>
 					</div>
-				{:else if ble_connected}
+				{:else if $ble_connected}
 					<div class="text-center text-xs bg-blue-900 text-white w-12 h-4">
 						<small>Bluethoot</small>
 					</div>

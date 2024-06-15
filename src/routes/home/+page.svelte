@@ -1,7 +1,7 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { kirimMsg } from '$lib/mqttHandle';
-	import { ble_connected } from '$lib/bleHandle';
+	
 	import {
 		suhuUdara,
 		kelembabanUdara,
@@ -9,7 +9,8 @@
 		resetAllValue,
 		demoMode,
 		conect_status,
-		kontrolIDStore
+		kontrolIDStore,
+		ble_connected
 	} from '$lib/store/stores';
 	import { onMount } from 'svelte';
 	import { get } from 'svelte/store';
@@ -50,7 +51,7 @@
 		<div class="w-full h-4 grid justify-items-center my-2">
 			{#if $demoMode}
 				<div class="text-center text-xs bg-red-500 text-white w-12 h-4"><small>Demo</small></div>
-				{:else if ble_connected}
+				{:else if $ble_connected}
 				<div class="text-center text-xs bg-blue-900 text-white w-12 h-4">
 					<small>Bluethoot</small>
 				</div>

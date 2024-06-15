@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { kirimMsg } from '$lib/mqttHandle';
-	import { ble_connected } from '$lib/bleHandle';
+	
 	import {
 		dosisPestisida,
 		dosisAirPestisida,
@@ -19,7 +19,8 @@
 		resetAllValue,
 		demoMode,
 		conect_status,
-		kontrolIDStore
+		kontrolIDStore,
+		ble_connected
 	} from '$lib/store/stores';
 	import Modal from '$lib/Modal.svelte';
 	import SveltyPicker from 'svelty-picker';
@@ -110,7 +111,7 @@
 
 	function semprotPestisida(lahan) {
 		let msg = '0';
-		if (($conect_status) || (ble_connected)) {
+		if (($conect_status) || ($ble_connected)) {
 			if ($runMode === 0 || $runMode === 2) {
 				runMode.set(2);
 				if (lahan === 0) {
@@ -227,7 +228,7 @@
 
 	function simpanDosisAirPestisida() {
 		if (!$demoMode) {
-			if (($conect_status) || (ble_connected)) {
+			if (($conect_status) || ($ble_connected)) {
 				kirimMsg('pestisida', 0, 'setDosisAirPestisida', String($dosisAirPestisida));
 			} else {
 				alertConect();
@@ -238,7 +239,7 @@
 	}
 	function simpanDosisPestisida() {
 		if (!$demoMode) {
-			if (($conect_status) || (ble_connected)) {
+			if (($conect_status) || ($ble_connected)) {
 				kirimMsg('pestisida', 0, 'setDosisPestisida', String($dosisPestisida));
 			} else {
 				alertConect();
@@ -758,7 +759,7 @@
 					<div class="text-center text-xs bg-red-500 text-white w-12 h-4">
 						<small>Demo</small>
 					</div>
-				{:else if ble_connected}
+				{:else if $ble_connected}
 					<div class="text-center text-xs bg-blue-900 text-white w-12 h-4">
 						<small>Bluethoot</small>
 					</div>

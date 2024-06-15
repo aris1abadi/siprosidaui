@@ -6,6 +6,7 @@ export const demoMode =writable(true)
 export const runMode = writable(0); //0 = menunggu,1 penyiraman,2 pestisida,3 biopestisida
 export const conect_status = writable(false)
 export const loginStatus = writable(false)
+export const ble_connected = writable(false)
 
 export const mqttStatus = writable(0);
 export const lengas1 = writable(0);
@@ -114,4 +115,7 @@ export function resetAllValue() {
 
 export const kontrolIDStore = persisted("kontrolID","SP0000");
 export const clientIDStore = persisted("clientID","-");
-export const brokerUseStore = persisted("brokerUse","wss://mqtt.eclipseprojects.io/mqtt:443");//0= eclipse
+export const brokerUseStore = persisted("brokerUse","wss://mqtt.eclipseprojects.io/mqtt");//0= eclipse
+export const brokerPortUseStore = persisted("brokerPortUse","443");//0= eclipse
+export const wifiSSIDStore = writable('---');
+export const wifiPasswordStore =writable('xxxx');

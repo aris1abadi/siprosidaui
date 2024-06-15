@@ -1,5 +1,6 @@
 import mqtt from 'mqtt'; // import namespace "mqtt"
-import { kirim_ble, ble_connected } from './bleHandle';
+import { kirim_ble } from './bleHandle';
+
 import {
   lengas1,
   lengas2,
@@ -51,7 +52,8 @@ import {
   kalibrasiBiopest,
   kalibrasiAirBiopest,
   brokerUseStore,
-  clientIDStore
+  clientIDStore,
+  ble_connected
 } from './store/stores';
 
 import { get } from 'svelte/store'
@@ -127,7 +129,6 @@ function cekClientId() {
 const client = mqtt.connect(host, options)
 
 
-
 client.on('error', (err) => {
   console.log(err)
   client.end()
@@ -150,6 +151,34 @@ client.on('connect', () => {
 })
 
 client.on('message', (topic, message, packet) => {
+  ceInputMsg(topic,message);
+})
+
+setInterval(() => {
+  if (++sts_count > 7) {
+    sts_count = 0;
+    conect_status.set(false);
+  }
+  //console.log("cek status")
+}, 5000);
+
+
+
+client.on('close', () => {
+  console.log(clientId + ' disconnected')
+})
+
+export function kirimMsg(type, num, cmd, msg) {
+  let ms = pubMqtt + type + '/' + num + '/' + cmd
+  const bleMsg = ms + ';' + msg + '\n'
+  if (get(ble_connected)) {
+    kirim_ble(bleMsg)
+  } else {
+    client.publish(ms, msg, { qos: 0, retain: false })
+  }
+}
+
+export function ceInputMsg(topic,message){
   //console.log('Received Message:= ' + message.toString() + '\nOn topic:= ' + topic)
   const topicMqtt = topic.split('/');
   //console.log("type msg: " + topicMqtt[2] + "-" + topicMqtt[4] + " => " + message)
@@ -627,30 +656,6 @@ client.on('message', (topic, message, packet) => {
       //format status loginstatus(0/1),-/username,clientID(jika login dari perangkat baru)
 
     }
-  }
-})
-
-setInterval(() => {
-  if (++sts_count > 7) {
-    sts_count = 0;
-    conect_status.set(false);
-  }
-  //console.log("cek status")
-}, 5000);
-
-
-
-client.on('close', () => {
-  console.log(clientId + ' disconnected')
-})
-
-export function kirimMsg(type, num, cmd, msg) {
-  let ms = pubMqtt + type + '/' + num + '/' + cmd
-  const bleMsg = ms + ';' + msg + '\n'
-  if (ble_connected) {
-    kirim_ble(bleMsg)
-  } else {
-    client.publish(ms, msg, { qos: 0, retain: false })
   }
 }
 

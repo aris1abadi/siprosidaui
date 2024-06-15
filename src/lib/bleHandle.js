@@ -1,3 +1,6 @@
+import { ble_connected } from "./store/stores";
+import { get } from "svelte/store";
+
 const bleNusServiceUUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
 const bleNusCharRXUUID = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
 const bleNusCharTXUUID = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
@@ -10,7 +13,7 @@ let rxCharacteristic;
 let txCharacteristic;
 let sendCount = 0;
 
-export let ble_connected = false;
+
 let logDisplay = 'log console\n';
 
 /*
@@ -24,7 +27,7 @@ function connectionToggle() {
 */
 
 export function ble_connect(){
-	if(ble_connected){
+	if(get(ble_connected)){
 		disconnect();
 	}else{
 		ble_click();
@@ -82,7 +85,7 @@ async function ble_click() {
 		.then(() => {
 			console.log( 'Notifications started\n');
 			txCharacteristic.addEventListener('characteristicvaluechanged', handleNotifications);
-			ble_connected = true;
+			ble_connected.set(true);
 			////window.term_.io.println('\r\n' + bleDevice.name + ' Connected.\n'
 			//nusSendString('\r\n');
 			//setConnButtonState(true);
@@ -104,7 +107,7 @@ function disconnect() {
 	console.log( 'Disconnecting from Bluetooth Device...\n');
 	if (bleDevice.gatt.connected) {
 		bleDevice.gatt.disconnect();
-		ble_connected = false;
+		ble_connected.set(false);
 		//setConnButtonState(false);
 		console.log( 'Bluetooth Device connected: ' + bleDevice.gatt.connected);
 	} else {
@@ -113,7 +116,7 @@ function disconnect() {
 }
 
 function onDisconnected() {
-	ble_connected = false;
+	ble_connected.set(false);
 	console.log( '\r\n' + bleDevice.name + ' Disconnected.');
 }
 

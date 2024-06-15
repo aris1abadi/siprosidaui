@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { kirimMsg } from '$lib/mqttHandle';
-	import { ble_connected } from '$lib/bleHandle';
+	
 	import {
 		lahan1Biopest_status,
 		lahan2Biopest_status,
@@ -19,7 +19,8 @@
 		runMode,
 		demoMode,
 		conect_status,
-		kontrolIDStore
+		kontrolIDStore,
+		ble_connected
 	} from '$lib/store/stores';
 	import Modal from '$lib/Modal.svelte';
 	import SveltyPicker from 'svelty-picker';
@@ -108,7 +109,7 @@
 
 	function semprotBiopest(lahan) {
 		let msg = '0';
-		if (($conect_status) || (ble_connected)) {
+		if (($conect_status) || ($ble_connected)) {
 			if ($runMode === 0 || $runMode === 3) {
 				runMode.set(3);
 				if (lahan === 0) {
@@ -237,7 +238,7 @@
 
 	function simpanDosisAirBiopest() {
 		if (!$demoMode) {
-			if (($conect_status) || (ble_connected)) {
+			if (($conect_status) || ($ble_connected)) {
 				kirimMsg('biopest', 0, 'setDosisAirBiopest', String($dosisAirBiopest));
 			} else {
 				alertConect();
@@ -248,7 +249,7 @@
 	}
 	function simpanDosisBiopest() {
 		if (!$demoMode) {
-			if (($conect_status) || (ble_connected)) {
+			if (($conect_status) || ($ble_connected)) {
 				kirimMsg('biopest', 0, 'setDosisBiopest', String($dosisBiopest));
 			} else {
 				alertConect();
@@ -727,7 +728,7 @@
 
 	function kalibrasiStart() {
 		if (!$demoMode) {
-			if (($conect_status) || (ble_connected)) {
+			if (($conect_status) || ($ble_connected)) {
 				kirimMsg('biopest', 0, 'kalibrasi', String(faktorKalibrasi));
 			} else {
 				alertConect();
@@ -739,7 +740,7 @@
 
 	function kalibrasiAirStart() {
 		if (!$demoMode) {
-			if (($conect_status) || (ble_connected)) {
+			if (($conect_status) || ($ble_connected)) {
 				kirimMsg('biopest', 0, 'kalibrasiAir', String(faktorKalibrasiAir));
 			} else {
 				alertConect();
@@ -751,7 +752,7 @@
 
 	function simpanKalibrasi(val) {
 		if (!$demoMode) {
-			if (($conect_status) || (ble_connected)) {
+			if (($conect_status) || ($ble_connected)) {
 				kirimMsg('biopest', 0, 'simpanKalibrasi', String(val));
 			} else {
 				alertConect();
@@ -763,7 +764,7 @@
 
 	function simpanKalibrasiAir(val) {
 		if (!$demoMode) {
-			if (($conect_status) || (ble_connected)) {
+			if (($conect_status) || ($ble_connected)) {
 				kirimMsg('biopest', 0, 'simpanKalibrasiAir', String(val));
 			} else {
 				alertConect();
@@ -818,7 +819,7 @@
 					<div class="text-center text-xs bg-red-500 text-white w-12 h-4">
 						<small>Demo</small>
 					</div>
-				{:else if ble_connected}
+				{:else if $ble_connected}
 					<div class="text-center text-xs bg-blue-900 text-white w-12 h-4">
 						<small>Bluethoot</small>
 					</div>
