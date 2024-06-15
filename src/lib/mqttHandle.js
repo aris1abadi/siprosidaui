@@ -151,7 +151,7 @@ client.on('connect', () => {
 })
 
 client.on('message', (topic, message, packet) => {
-  ceInputMsg(topic,message);
+  cekInputMsg(topic,message);
 })
 
 setInterval(() => {
@@ -178,7 +178,7 @@ export function kirimMsg(type, num, cmd, msg) {
   }
 }
 
-export function ceInputMsg(topic,message){
+export function cekInputMsg(topic,message){
   //console.log('Received Message:= ' + message.toString() + '\nOn topic:= ' + topic)
   const topicMqtt = topic.split('/');
   //console.log("type msg: " + topicMqtt[2] + "-" + topicMqtt[4] + " => " + message)

@@ -1,4 +1,5 @@
 import { ble_connected } from "./store/stores";
+import { cekInputMsg } from "./mqttHandle";
 import { get } from "svelte/store";
 
 const bleNusServiceUUID = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
@@ -130,6 +131,8 @@ function handleNotifications(event) {
 		str += String.fromCharCode(value.getUint8(i));
 	}
 	console.log( str);
+	let bleSplit = str.split(';');
+	cekInputMsg(bleSplit[0],bleSplit[1])
 }
 
 function nusSendString(s) {
