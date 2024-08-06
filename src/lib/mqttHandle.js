@@ -53,7 +53,8 @@ import {
   kalibrasiAirBiopest,
   brokerUseStore,
   clientIDStore,
-  ble_connected
+  ble_connected,
+  brokerPortUseStore
 } from './store/stores';
 
 import { get } from 'svelte/store'
@@ -90,7 +91,9 @@ const pubMqtt = "bsip-in/" + get(kontrolIDStore) + "/"
 let clientId = '---'
 //const host = 'ws://abadinet.my.id:2020'
 //const host = 'wss://node-red.balingtansmart.my.id/ws'    
-const host = get(brokerUseStore)
+//const host = 'wss://' + get(brokerUseStore) + '/mqtt:' + get(brokerPortUseStore); 
+const host = 'wss://mqtt.eclipseprojects.io/mqtt:443'
+
 let sts_count = 0;
 
 const options = {
@@ -121,9 +124,9 @@ function cekClientId() {
 
   }
 }
-
-
-
+export function loadMqtt(){
+  
+}
 
 //console.log('connecting mqtt client')
 const client = mqtt.connect(host, options)

@@ -115,7 +115,7 @@ export function resetAllValue() {
 
 export const kontrolIDStore = persisted("kontrolID","SP0000");
 export const clientIDStore = persisted("clientID","-");
-export const brokerUseStore = persisted("brokerUse","wss://mqtt.eclipseprojects.io/mqtt");//0= eclipse
+export const brokerUseStore = persisted("brokerUse","mqtt.eclipseprojects.io");//0= eclipse
 export const brokerPortUseStore = persisted("brokerPortUse","443");//0= eclipse
 export const wifiSSIDStore = writable('---');
 export const wifiPasswordStore =writable('xxxx');

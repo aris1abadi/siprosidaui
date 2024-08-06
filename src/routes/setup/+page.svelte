@@ -12,6 +12,7 @@
 		lahan3_status,
 		lahan4_status,
 		kontrolIDStore,
+		clientIDStore,
 		lengas1raw,
 		lengas2raw,
 		lengas3raw,
@@ -44,7 +45,9 @@
 	let selenoidOutletBiopest_sts = false;
 
 	let kontrolId_value = '';
-	let brokerUse_value = '';
+	let prefixBroker_value = 'wss://'
+	let postfixBroker_value = '/mqtt'
+	let brokerUse_value = 'Pilih Server';
 	let brokerPortUse_value = '';
 	let wifiSSID_value ='---';
 	let wifiPassword_value = 'xxxx';
@@ -126,6 +129,21 @@
 	}
 
 	function simpanBroker() {
+		
+		if(brokerUse_value === 'Server 1'){
+			brokerUseStore.set('ws://mqtt.eclipseprojects.io/mqtt')
+			brokerPortUseStore.set('80')
+
+		}else if(brokerUse_value === 'Server 2'){
+			brokerUseStore.set('wss://mqtt.eclipseprojects.io/mqtt')
+			brokerPortUseStore.set('443')
+
+		}else if(brokerUse_value === 'Server 3'){
+			brokerUseStore.set('ws://broker.hivemq.com/')
+			brokerPortUseStore.set('8000')
+		}
+
+		/*
 		if (brokerUse_value === '') {
 			alert('Server tidak boleh kosong\n');
 		} else {
@@ -135,6 +153,7 @@
 			kirimMsg('kontrol', 0, 'setupBroker', brokerMsg);
 			alert('Server ' + brokerUse_value + 'port: ' + brokerPortUse_value + ' disimpan');
 		}
+		*/
 	}
 
 	function simpanWifi(){
@@ -494,7 +513,7 @@
 <div class="h-screen w-screen bg-zinc-800">
 	<div class="mainbg h-full w-full max-w-md mx-auto flex flex-col">
 		<div class="hd_home w-full h-16">
-			<div class="text-xs w-full text-center mt-12">{get(kontrolIDStore)}</div>
+			<div class="text-xs w-full text-center mt-12">{get(kontrolIDStore)} ~ {get(clientIDStore)}</div>
 			<div class="w-full h-4 grid justify-items-center mb-2">
 				{#if $demoMode}
 					<div class="text-center text-xs bg-red-500 text-white w-12 h-4"><small>Demo</small></div>
@@ -1088,6 +1107,32 @@
 				<!--tab admin-->
 				<input type="radio" name="my_tabs_2" role="tab" class="tab text-xs" aria-label="admin" />
 				<div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-2">
+					<div class=" w-full h-10 p-2 mt-4 grid grid-cols-4 gap-2 bg-base-100 border">
+						<div class="text-center">KontrolID</div>
+						<input
+							class="w-full h-6 border border-black rounded text-center text-[12px] "
+							type="text"
+							placeholder={get(kontrolIDStore)}
+							bind:value={kontrolId_value}
+						/>
+
+						<button
+							on:click={() => simpanId()}
+							class="w-full h-6 border bg-green-500 rounded border-green-900">Simpan</button
+						>
+					</div>
+
+					<div class=" w-full h-20 p-2 gap-1 bg-base-100 border mt-2">
+						<label class="form-control w-full max-w-xs h-6">								
+							<select class="select select-bordered " bind:value={brokerUse_value} on:change={() => simpanBroker()}>
+							  <option disabled selected>Pilih Server</option>
+							  <option>Server 1</option>
+							  <option>Server 2</option>
+							  <option>Server 3</option>								  
+							</select>							
+						  </label>
+					</div>
+					
 					<div class="w-full border mt-4 p-4 grid justify-items-center">
 						<form on:submit|preventDefault={handleSubmit}>
 							<input type="file" on:change={handleFileChange} />
@@ -1116,60 +1161,25 @@
 							: 'w-full h-8 border bg-blue-100 rounded border-blue-900 text-blue'}
 					>
 						{#if !$ble_connected}
-							Sambung ke Bluethoot
+							Sambungkan ke Kontroller
 						{:else}
-							Putuskan Bluethoot
+							Putus Kontroller
 						{/if}
 					</button>
-					{#if $ble_connected}
-						<div class=" w-full h-12 p-2 mt-4 grid grid-cols-4 gap-2 bg-base-100 border">
-							<div class="text-center">KontrolID</div>
-							<input
-								class="w-full h-8 border border-black rounded text-center"
-								type="text"
-								placeholder={get(kontrolIDStore)}
-								bind:value={kontrolId_value}
-							/>
-
-							<button
-								on:click={() => simpanId()}
-								class="w-full h-8 border bg-green-500 rounded border-green-900">Simpan</button
-							>
-						</div>
-
-						<div class=" w-full h-20 p-2 grid grid-cols-4 gap-2 bg-base-100 border mt-2">
-							<div class="text-left col-span-4">Server</div>
-							<input
-								class="w-full h-8 col-span-2 border border-black rounded text-left"
-								type="text"
-								placeholder={get(brokerUseStore)}
-								bind:value={brokerUse_value}
-							/>
-							<input
-								class="w-full h-8 border border-black rounded text-center"
-								type="text"
-								placeholder={get(brokerPortUseStore)}
-								bind:value={brokerPortUse_value}
-							/>
-
-							<button
-								on:click={() => simpanBroker()}
-								class="w-full h-8 border bg-green-500 rounded border-green-900">Simpan</button
-							>
-						</div>
+					{#if $ble_connected}					
 
 						<div class=" w-full h-30 p-2 grid grid-cols-4 gap-2 bg-base-100 border mt-2">
-							<div class="text-left col-span-4">Set Wifi</div>
-							<div class="text-left col-span-2 text-xs">SSID</div>
+							
+							<div class="text-left col-span-2 text-xs">WIFI SSID</div>
 							<div class="text-left col-span-2 text-xs">Password</div>
 							<input
-								class="w-full h-8 col-span-2 border border-black rounded text-left"
+								class="w-full h-6 col-span-2 border border-black rounded text-center"
 								type="text"
 								placeholder={$wifiSSIDStore}
 								bind:value={wifiSSID_value}
 							/>
 							<input
-								class="w-full h-8 col-span-2 border border-black rounded text-center"
+								class="w-full h-6 col-span-2 border border-black rounded text-center"
 								type="text"
 								placeholder={$wifiPasswordStore}
 								bind:value={wifiPassword_value}
@@ -1177,10 +1187,10 @@
 
 							<button
 								on:click={() => simpanWifi()}
-								class="w-full h-8 border col-span-4 bg-green-500 rounded border-green-900">Simpan WiFi</button
+								class="w-full h-6 border col-span-4 bg-green-500 rounded border-green-900">Simpan WiFi</button
 							>
 						</div>
-						<div class="w-full border mt-2 p-4 grid grid-cols-2 gap-4">
+						<div class="w-full border mt-2 p-2 grid grid-cols-2 gap-4">
 							<div>
 								<label class="form-control w-full text-[10px]">
 									Nama User
@@ -1188,7 +1198,7 @@
 										type="text"
 										bind:value={username}
 										placeholder="---"
-										class="border border-gray-400 rounded text-center text-xs w-full h-8"
+										class="border border-gray-400 rounded text-center text-xs w-full h-6"
 									/>
 								</label>
 								</div>
@@ -1199,7 +1209,7 @@
 										type="text"
 										bind:value={password}
 										placeholder="---"
-										class="border border-gray-400 rounded text-center text-xs w-full h-8"
+										class="border border-gray-400 rounded text-center text-xs w-full h-6"
 									/>
 								</label>
 								</div>
@@ -1211,7 +1221,7 @@
 										type="text"
 										bind:value={newPassword1}
 										placeholder="---"
-										class="border border-gray-400 rounded text-center text-xs w-full h-8"
+										class="border border-gray-400 rounded text-center text-xs w-full h-6"
 									/>
 								</label>
 								</div>
@@ -1222,11 +1232,11 @@
 										type="text"
 										bind:value={newPassword2}
 										placeholder="---"
-										class="border border-gray-400 rounded text-center text-xs w-full h-8"
+										class="border border-gray-400 rounded text-center text-xs w-full h-6"
 									/>
 								</label>
 								</div>
-								<button class="border border-gray-400 rounded col-span-2 text-center text-xs w-full h-8 mt-4"
+								<button class="border border-gray-400 rounded col-span-2 text-center text-xs w-full h-8 mt-2"
 									>Simpan</button 
 								>
 							
