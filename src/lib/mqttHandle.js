@@ -86,8 +86,8 @@ import { onMount } from 'svelte';
 //const subMqtt = "bsip-out/" + kontrolID + "/#"
 //const pubMqtt = "bsip-in/" + kontrolID + "/"
 
-const subMqtt = "bsip-out/" + get(kontrolIDStore) + "/#"
-const pubMqtt = "bsip-in/" + get(kontrolIDStore) + "/"
+const subMqtt = "abadinet-out/" + get(kontrolIDStore) + "/#"
+const pubMqtt = "abadinet-in/" + get(kontrolIDStore) + "/"
 let clientId = '---'
 //const host = 'ws://abadinet.my.id:2020'
 //const host = 'wss://node-red.balingtansmart.my.id/ws'    
